@@ -1,0 +1,15 @@
+/* Page Transition Animation */
+.main-content {
+    opacity: 0;
+    animation: fadeIn 1s forwards;
+}
+
+@keyframes fadeIn {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+}
+
+  /* Hover Effect for Logo */
+.logo a:hover {
+    transform: scale(1.1);
+}

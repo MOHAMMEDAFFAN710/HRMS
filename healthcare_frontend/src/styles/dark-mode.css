@@ -1,0 +1,26 @@
+/* Dark Mode */
+.dark {
+    background-color: #121212;
+    color: white;
+}
+
+  /* Header */
+.dark .app-header {
+    background-color: #1e1e1e;
+}
+
+  /* Navigation */
+.dark .nav ul li a {
+    color: white;
+}
+
+  /* Dropdown */
+.dark .dropdown-menu {
+    background-color: #2a2a2a;
+}
+
+  /* Dark Mode Toggle */
+.dark-mode-toggle {
+    background-color: #444;
+    color: white;
+}

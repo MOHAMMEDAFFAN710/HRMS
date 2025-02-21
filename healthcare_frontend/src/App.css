@@ -1,0 +1,315 @@
+/* Dark Mode Styles */
+.dark {
+    background-color: #121212;
+    color: white;
+  }
+  .dark .app-header {
+    background-color: #1e1e1e;
+  }
+  .dark .nav ul li a {
+    color: white;
+  }
+  .dark .dropdown-menu {
+    background-color: #2a2a2a;
+  }
+  .dark .dark-mode-toggle {
+    background-color: #444;
+    color: white;
+  }
+  /* Centering Home Page Text */
+  .centered-content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    text-align: center;
+  }
+  .centered-content {
+    display: flex;
+    justify-content: center;  /* Horizontally center */
+    align-items: center;      /* Vertically center */
+    height: 100vh;            /* Take full viewport height */
+    text-align: center;       /* Ensure the text is centered */
+  }
+  /* Default light mode */
+  .app-container {
+    transition: all 0.3s ease;
+    background-color: white;
+    color: black;
+    background-color: #fff;
+    color: #333;
+  }
+  .app-container.dark {
+    background-color: #333;
+    color: #fff;
+  }
+  .app-header {
+    background-color: #f5f5f5;
+    padding: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .app-header.dark {
+    background-color: #333;
+  }
+  .nav ul {
+    list-style-type: none;
+    padding: 0;
+  }
+  .nav ul li {
+    display: inline-block;
+    margin-right: 20px;
+  }
+  .nav ul li a {
+    text-decoration: none;
+    color: #000;
+  }
+  .nav ul li a:hover {
+    color: #007BFF;
+  }
+  /* Hamburger Menu */
+  .hamburger {
+    font-size: 30px;
+    cursor: pointer;
+  }
+  
+  .dark-mode-toggle {
+    background-color: #007bff;
+    border: none;
+    padding: 10px 20px;
+    color: white;
+    cursor: pointer;
+    border-radius: 5px;
+  }
+  .dark-mode-toggle:hover {
+    background-color: #0056b3;
+  }
+  /* Dark mode button */
+  button {
+    background-color: #333;
+    color: #fff;
+    padding: 0.5rem 1rem;
+    border: none;
+    cursor: pointer;
+  }
+  /* Button click animation */
+  button {
+    transition: transform 0.2s ease, background-color 0.3s ease,box-shadow 0.3s ease;
+  }
+  
+  button:hover {
+    transform: scale(1.05);
+    background-color: #4CAF50;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  }
+  /* Page Transition Animation */
+  .main-content {
+    opacity: 0;
+    animation: fadeIn 1s forwards;
+  }
+  @keyframes fadeIn {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+  }
+  /* Make Header Sticky */
+  .sticky-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background: #ffffff;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 15px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    z-index: 1000;
+  }
+  /* Logo Styling */
+  .logo a {
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-decoration: none;
+    color: #007bff;
+    transition: transform 0.3 ease-in-out;
+  }
+  /* add bounce animation on hover */
+  .logo a:hover{
+    transform: scale(1.1);
+  }
+  /* Navigation Styling */
+  nav ul {
+    list-style: none;
+    display: flex;
+    gap: 20px;
+    padding: 0;
+    margin: 0;
+  }
+  nav ul li {
+    display: inline;
+    position: relative;
+  }
+  nav ul li a {
+    text-decoration: none;
+    color: #333;
+    font-weight: bold;
+    transition: color 0.3s ease-in-out;
+    padding: 10px;
+  }
+  /*dropdown styling */
+  .dropdown-menu{
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background: #fff;
+    border-radius: 5px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    display: flex;
+    flex-direction: column;
+    min-width: 180px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(10px);
+    transition: opacity 0.3s ease-in-out,transform 0.3 ease-in-out;
+  }
+  .dropdown:hover .dropdown-menu{
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+  /* Dropdown Items */
+  .dropdown-menu li {
+    padding: 10px;
+  }
+  .dropdown-menu li a {
+    text-decoration: none;
+    color: #333;
+    display: block;
+    transition: background 0.3s ease-in-out;
+  }
+  .dropdown-menu li a:hover {
+    background: #007bff;
+    color: #fff;
+  }
+  nav ul li a:hover {
+    color: #007bff; /* Blue hover effect */
+  }
+  /* Ensure Content Doesn't Hide Behind Sticky Header */
+  .main-content {
+    padding-top: 70px;
+  }
+  /* Basic layout styles */
+  body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  .app-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+  }
+  .app-header {
+    display: flex;
+    position: fixed;
+    background-color: #2d545e;
+    color:  #e1b382;
+    padding: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  }
+  .app-header .logo {
+    font-size: 1.5rem;
+    font-weight: bold;
+  }
+  .app-header .hamburger {
+    display: none;
+    font-size: 2rem;
+    cursor: pointer;
+  }
+  .nav ul {
+    display: flex;
+    list-style: none;
+    padding: 0;
+  }
+  .nav ul li {
+    margin: 0 1rem;
+  }
+  .nav ul li a {
+    text-decoration: none;
+    color: #333;
+    font-size: 1.1rem;
+  }
+  /* Mobile view */
+  @media (max-width: 768px) {
+    .hamburger {
+        display: block;
+    }
+    .nav {
+        display: none;
+        flex-direction: column;
+        position: absolute;
+        top: 60px;
+        right: 0;
+        background-color: #fff;
+        width: 100%;
+        padding: 1rem;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+    .nav.open {
+        display: flex;
+    }
+    .nav ul {
+        display: block;
+    }
+    .nav ul li {
+        margin: 1rem 0;
+    }
+  }
+  .app-header nav ul {
+    list-style-type: none;
+    display: flex;
+  }
+  .app-header nav ul li {
+    margin-right: 20px;
+  }
+  .app-header nav ul li a {
+    color:  #e1b382;
+    text-decoration: none;
+    font-size: 18px;
+  }
+  .app-header nav ul li a:hover {
+    text-decoration: underline;
+  }
+  .main-content {
+    flex: 1;
+    padding: 2rem;
+    background-color: #f2f7f0;
+}
+footer {
+    background-color: #e4eee2;
+    color: #0b0b0b;
+    text-align: center;
+    padding: 1rem;
+}
+@media (max-width: 768px) {
+    .app-header nav ul {
+      flex-direction: column;
+      align-items: center;
+    }
+    .app-header nav ul li {
+      margin-bottom: 10px;
+    }
+    .main-content {
+      padding: 1rem;
+    }
+  }
+  

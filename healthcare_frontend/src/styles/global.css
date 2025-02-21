@@ -1,0 +1,34 @@
+/* Global Styles */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+  /* App Container */
+.app-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    transition: all 0.3s ease;
+    background-color: white;
+    color: black;
+}
+
+  /* Main Content */
+.main-content {
+    flex: 1;
+    padding: 2rem;
+    background-color: #f2f7f0;
+}
+
+.main-content {
+    opacity: 0;
+    animation: fadeIn 1s forwards;
+}
+
+@keyframes fadeIn {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+}
