@@ -1,28 +1,17 @@
-# Frontend (React) ignores
-healthcare_frontend/node_modules/
-healthcare_frontend/.pnp
-healthcare_frontend/.pnp.js
-healthcare_frontend/coverage/
-healthcare_frontend/build/
-healthcare_frontend/.DS_Store
-healthcare_frontend/.env.local
-healthcare_frontend/.env.development.local
-healthcare_frontend/.env.test.local
-healthcare_frontend/.env.production.local
-healthcare_frontend/npm-debug.log*
-healthcare_frontend/yarn-debug.log*
-healthcare_frontend/yarn-error.log*
+# Node.js dependencies
+node_modules/
+package-lock.json
+yarn.lock
 
-# Backend (Django) ignores
-healthcare_backend/__pycache__/
-healthcare_backend/*/migrations/
-healthcare_backend/*/__pycache__/
-healthcare_backend/*.sqlite3
-healthcare_backend/.env
-healthcare_backend/.vscode/
+# Python dependencies
+venv/
+__pycache__/
+db.sqlite3
 
-# General ignores
-.DS_Store
+# Environment variables
 .env
-.venv/
-.vscode/
+
+# Django migrations (optional)
+*.pyc
+*.pyo
+*.log
