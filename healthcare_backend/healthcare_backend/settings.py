@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -27,10 +28,21 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+AUTH_USER_MODEL = 'api.User'  # Replace 'api' with your actual app name
 
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    ],
+}
+
+CORS_ALLOW_CREDENTIALS = True  # For cookies/session auth
 # Application definition
 
 INSTALLED_APPS = [
+    'corsheaders',
+    'channels',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -42,16 +54,14 @@ INSTALLED_APPS = [
     
     #Third-party apps
     'rest_framework',
-    'corsheaders',
+    'rest_framework.authtoken',
     
     
 ]
 # Allow React to access Django API
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",  # React frontend
-]
+
 MIDDLEWARE = [
-    
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -60,13 +70,26 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000", 
+    "http://127.0.0.1:3000", # React frontend
+    
+    
+]
+
+CSRF_TRUSTED_ORIGINS = CORS_ALLOWED_ORIGINS.copy()
+
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, '../frontend/build/static'),
+]
+
 
 ROOT_URLCONF = 'healthcare_backend.urls'
 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'healthcare_backend', 'api', 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -78,6 +101,8 @@ TEMPLATES = [
         },
     },
 ]
+ASGI_APPLICATION = "healthcare_backend.asgi.application"
+
 
 WSGI_APPLICATION = 'healthcare_backend.wsgi.application'
 

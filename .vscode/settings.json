@@ -1,5 +1,8 @@
 {
     "cSpell.words": [
-        "Telemedicine"
+        "authtoken",
+        "corsheaders",
+        "Telemedicine",
+        "viewsets"
     ]
 }
