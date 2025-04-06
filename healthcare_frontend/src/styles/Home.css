@@ -5,4 +5,21 @@
     justify-content: center;
     height: 100vh; /* Centers content vertically */
     text-align: center;
+
+        /* position: relative; */
+        background: linear-gradient(0deg, #f7a44c 0%,#e1b382  100%);       
+         background-size:contain;
+        margin:0px;
+        background-position: center;
+        height: 100vh;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+}
+.home-container .dark{
+    background-color: black;
+}
+.dark .app-container{
+    background-color: black;
 }

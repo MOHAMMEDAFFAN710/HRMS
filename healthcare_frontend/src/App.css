@@ -1,36 +1,30 @@
+
+
+
 /* Dark Mode Styles */
 .dark {
     background-color: #121212;
     color: white;
   }
   .dark .app-header {
-    background-color: #1e1e1e;
+    background-color: #000000e4;
   }
   .dark .nav ul li a {
     color: white;
   }
   .dark .dropdown-menu {
-    background-color: #2a2a2a;
+    background-color: #4e4e4e;
   }
   .dark .dark-mode-toggle {
     background-color: #444;
     color: white;
   }
   /* Centering Home Page Text */
-  .centered-content {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    text-align: center;
-  }
-  .centered-content {
-    display: flex;
-    justify-content: center;  /* Horizontally center */
-    align-items: center;      /* Vertically center */
-    height: 100vh;            /* Take full viewport height */
-    text-align: center;       /* Ensure the text is centered */
-  }
+ 
+
+
+
+
   /* Default light mode */
   .app-container {
     transition: all 0.3s ease;
@@ -40,7 +34,7 @@
     color: #333;
   }
   .app-container.dark {
-    background-color: #333;
+    background-color: #686868;
     color: #fff;
   }
   .app-header {
@@ -51,31 +45,107 @@
     align-items: center;
   }
   .app-header.dark {
-    background-color: #333;
+    background-color: #a19191;
   }
-  .nav ul {
+    .dropdown-menu{
+    position: absolute;
+    top: 100%;
+    left: 0;
+    color:black;
+    font-size: 10px;
+    background: #fff;
+    border-radius: 5px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    display: flex;
+    flex-direction: column;
+    min-width: 180px;
+    height:120px;
+    
+    width:160px;
+    padding:0px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(10px);
+    transition: opacity 0.3s ease-in-out,transform 0.3 ease-in-out;
+  }
+  .dropdown:hover .dropdown-menu{
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+  /* Dropdown Items */
+  .dropdown-menu li {
+    padding: 5px;
+  }
+  .dark .dropdown-menu li a{
+    color:white;
+
+}
+.dark .dropdown-menu {
+  background-color: #4d4b4b;
+  transition :COLOR 0.3S ease-in-out;
+}
+.dark .dropdown-menu li a:hover {
+  background-color: rgb(170, 168, 168);
+  color:white;
+}
+
+  .dropdown-menu li a {
+    text-decoration: none;
+    color: #181414;
+    position :relative;
+
+    margin:0px;
+    width:130px;
+    border-radius: 5px;
+    display: block;
+    transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
+  }
+  .dropdown-menu li a:hover {
+    background-color: #e3d2c2;
+
+    color: #161515;
+  }
+  
+
+  /* .nav ul {
     list-style-type: none;
     padding: 0;
   }
   .nav ul li {
     display: inline-block;
+
     margin-right: 20px;
   }
   .nav ul li a {
     text-decoration: none;
-    color: #000;
+    color: blue;
   }
   .nav ul li a:hover {
-    color: #007BFF;
-  }
+    color: #0257b1;
+  } */
+  
   /* Hamburger Menu */
   .hamburger {
     font-size: 30px;
     cursor: pointer;
+    color:yellow;
+    z-index:111;
+    display :block;
+    width:30px;
+    height: 50px;
+  }
+  @media(max-width:600px){
+    .hamburger{
+      display:block;
+    }
+  }
+  h3{
+    color:black;
   }
   
   .dark-mode-toggle {
-    background-color: #007bff;
+    background-color: #31278bd8;
     border: none;
     padding: 10px 20px;
     color: white;
@@ -83,7 +153,7 @@
     border-radius: 5px;
   }
   .dark-mode-toggle:hover {
-    background-color: #0056b3;
+    background-color: #251b7ce1;
   }
   /* Dark mode button */
   button {
@@ -100,8 +170,15 @@
   
   button:hover {
     transform: scale(1.05);
-    background-color: #4CAF50;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    background-color: #1c1556;
+    box-shadow: 0 4px 10px #12343b;
+  }
+  .video-centered{
+    background-color: "aqua";
+    height: "500px";
+    width: "600px" ;
+    margin-top:"80px";
+    padding:"10px";
   }
   /* Page Transition Animation */
   .main-content {
@@ -118,7 +195,7 @@
   }
   /* Make Header Sticky */
   .sticky-header {
-    position: fixed;
+    position:fixed;
     top: 0;
     left: 0;
     width: 100%;
@@ -132,15 +209,20 @@
   }
   /* Logo Styling */
   .logo a {
+
     font-size: 1.5rem;
     font-weight: bold;
     text-decoration: none;
-    color: #007bff;
-    transition: transform 0.3 ease-in-out;
+    color: #e5a868;
+    transition: transform 0.3 ease-in-out,color 0.3 ease;
+  }
+  .dark a{
+    color:white;
   }
   /* add bounce animation on hover */
   .logo a:hover{
-    transform: scale(1.1);
+    transform:scale(0.3);
+
   }
   /* Navigation Styling */
   nav ul {
@@ -162,43 +244,12 @@
     padding: 10px;
   }
   /*dropdown styling */
-  .dropdown-menu{
-    position: absolute;
-    top: 100%;
-    left: 0;
-    background: #fff;
-    border-radius: 5px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    display: flex;
-    flex-direction: column;
-    min-width: 180px;
-    opacity: 0;
-    visibility: hidden;
-    transform: translateY(10px);
-    transition: opacity 0.3s ease-in-out,transform 0.3 ease-in-out;
-  }
-  .dropdown:hover .dropdown-menu{
-    opacity: 1;
-    visibility: visible;
-    transform: translateY(0);
-  }
-  /* Dropdown Items */
-  .dropdown-menu li {
-    padding: 10px;
-  }
-  .dropdown-menu li a {
-    text-decoration: none;
-    color: #333;
-    display: block;
-    transition: background 0.3s ease-in-out;
-  }
-  .dropdown-menu li a:hover {
-    background: #007bff;
-    color: #fff;
-  }
+
+ 
   nav ul li a:hover {
-    color: #007bff; /* Blue hover effect */
-  }
+    color: #0a0a0b; /* Blue hover effect */
+
+  } 
   /* Ensure Content Doesn't Hide Behind Sticky Header */
   .main-content {
     padding-top: 70px;
@@ -216,11 +267,13 @@
     height: 100vh;
   }
   .app-header {
-    display: flex;
+    display:flex;
     position: fixed;
-    background-color: #2d545e;
+    background-color: #fff;
+    height:60px;
     color:  #e1b382;
     padding: 1rem;
+    z-index:1;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -250,9 +303,9 @@
   }
   /* Mobile view */
   @media (max-width: 768px) {
-    .hamburger {
+    /* .hamburger {
         display: block;
-    }
+    } */
     .nav {
         display: none;
         flex-direction: column;
@@ -282,16 +335,28 @@
     margin-right: 20px;
   }
   .app-header nav ul li a {
-    color:  #e1b382;
+    color: #e1b382;
     text-decoration: none;
-    font-size: 18px;
+    font-size: 22px;
+    font-weight: bold;
+    font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
   }
   .app-header nav ul li a:hover {
-    text-decoration: underline;
+    color:#c77927f4;
+  }
+  
+  .dark nav ul li a:hover {
+
+    color:rgb(211, 207, 207);
+  }
+  .dark li a:hover {
+
+    color:rgb(211, 207, 207);
   }
   .main-content {
     flex: 1;
-    padding: 2rem;
+    
+  
     background-color: #f2f7f0;
 }
 footer {
@@ -312,4 +377,5 @@ footer {
       padding: 1rem;
     }
   }
+  
   

@@ -1,0 +1,39 @@
+.centered-content {
+    
+    background: linear-gradient(0deg, #f7a44c 0%,#e1b382  100%);
+    background-size:contain;
+    margin:0px;
+    background-position: center;
+    height: 100vh;
+    color: white;
+    display: flex;
+    text-align: center; 
+    align-items: center;
+    justify-content: center;
+}
+.appointing{
+    height:
+}
+/* .appoint-main{
+    
+      
+        background: linear-gradient(0deg, #f7a44c 0%,#e1b382  100%);
+        background-size:contain;
+        margin:0px;
+        background-position: center;
+        height: 100vh;
+        color: white;
+        display: flex;
+        text-align: center; 
+        align-items: center;
+        justify-content: center;
+    
+} */
+ .centered-content ul li a{
+    height:300px;
+    width:200px;
+
+    background-color: beige;
+    border :2px white solid;
+    margin:10px;
+ }

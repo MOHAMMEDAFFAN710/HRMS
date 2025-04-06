@@ -5,10 +5,11 @@
     align-items: center;
     justify-content: center;
     height: 100vh;
-    background: linear-gradient(135deg, #009ffd, #2a2a72);
+    background: linear-gradient(0deg, #f7a44c 0%,#e1b382  100%);
     color: white;
     text-align: center;
     padding: 20px;
+  
   }
   
   .telemedicine-header {

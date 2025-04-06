@@ -32,7 +32,10 @@
     display: block;
     transition: background 0.3s ease-in-out;
 }
+.dropdown-menu.dark li a{
+    color:white;
 
+}
 .dropdown-menu li a:hover {
     background: #007bff;
     color: #fff;

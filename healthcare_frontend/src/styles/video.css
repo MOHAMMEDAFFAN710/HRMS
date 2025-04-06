@@ -1,0 +1,32 @@
+.video-centered{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    background-color: #e7c8a6;
+    color: white;
+    text-align: center;
+    padding: 20px;
+    
+  
+}
+.custom-num::-webkit-inner-spin-button,
+.custom-num::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.custom-num{
+    width:200px;
+    height:25px;
+    border-radius:3px;
+     border:none;
+     padding-left:10px;
+     outline:none;
+     margin-top:10px;
+}
+.num-submit{
+    margin:10px;
+    height:30px;
+    border-radius: 5px;
+}

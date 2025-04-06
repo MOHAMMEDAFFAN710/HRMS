@@ -9,7 +9,7 @@ const Login = () => {
 
     const handleLogin = (e) => {
         e.preventDefault();
-        if (email === "admin@example.com" && password === "password123") {
+        if (email === "admin@example.com" && password === "123") {
             alert("Login Successful!");
             navigate("/");
         } else {
