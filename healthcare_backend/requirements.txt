@@ -14,7 +14,6 @@ certifi==2024.8.30
 charset-normalizer==3.3.2
 ckzg==2.0.1
 click==8.1.7
-colorama==0.4.6
 cytoolz==1.0.1
 distro==1.9.0
 dj-database-url==2.3.0
@@ -82,7 +81,7 @@ pydantic_core==2.23.4
 Pygments==2.18.0
 pyparsing==3.1.4
 pyunormalize==16.0.0
-pywin32==308
+
 regex==2024.11.6
 requests==2.32.3
 rich==13.8.1
