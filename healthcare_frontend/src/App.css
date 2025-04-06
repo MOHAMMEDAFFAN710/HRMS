@@ -358,24 +358,265 @@
     
   
     background-color: #f2f7f0;
+  background-color: #121212;
+  color: white;
 }
+.dark .app-header {
+  background-color: #1e1e1e;
+}
+.dark .nav ul li a {
+  color: white;
+}
+.dark .dropdown-menu {
+  background-color: #2a2a2a;
+}
+.dark .dark-mode-toggle {
+  background-color: #444;
+  color: white;
+}
+
+/* Centering Home Page Text */
+.centered-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  text-align: center;
+}
+
+/* Default light mode */
+.app-container {
+  transition: all 0.3s ease;
+  background-color: white;
+  color: black;
+}
+.app-container.dark {
+  background-color: #333;
+  color: #fff;
+}
+
+/* Header Styles */
+.app-header {
+  background-color: #2d545e;
+  color: #e1b382;
+  padding: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  position: fixed;
+  width: 100%;
+  z-index: 1000;
+}
+
+/* Connection Status Badge */
+.connection-badge {
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  margin-right: auto;
+  margin-left: 20px;
+  background-color: rgba(255, 255, 255, 0.1);
+}
+.connection-badge.success {
+  background-color: #4CAF50;
+  color: white;
+}
+.connection-badge.error {
+  background-color: #f44336;
+  color: white;
+}
+
+.nav ul {
+  list-style-type: none;
+  padding: 0;
+  display: flex;
+}
+.nav ul li {
+  margin-right: 20px;
+  position: relative;
+}
+.nav ul li a {
+  text-decoration: none;
+  color: #e1b382;
+  font-size: 18px;
+  transition: color 0.3s ease-in-out;
+  padding: 10px;
+}
+.nav ul li a:hover {
+  color: #fff;
+  text-decoration: underline;
+}
+
+/* Dropdown Styling */
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: #fff;
+  border-radius: 5px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  display: flex;
+  flex-direction: column;
+  min-width: 180px;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(10px);
+  transition: all 0.3s ease-in-out;
+  z-index: 1001;
+}
+.dropdown:hover .dropdown-menu {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+.dropdown-menu li {
+  padding: 10px;
+}
+.dropdown-menu li a {
+  color: #333;
+  display: block;
+  transition: background 0.3s ease-in-out;
+}
+.dropdown-menu li a:hover {
+  background: #007bff;
+  color: #fff;
+}
+.dark .dropdown-menu {
+  background-color: #2a2a2a;
+}
+.dark .dropdown-menu li a {
+  color: white;
+}
+.dark .dropdown-menu li a:hover {
+  background: #0056b3;
+}
+
+/* Dark Mode Toggle */
+.dark-mode-toggle {
+  background-color: #007bff;
+  border: none;
+  padding: 10px 20px;
+  color: white;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: transform 0.2s ease, background-color 0.3s ease, box-shadow 0.3s ease;
+}
+.dark-mode-toggle:hover {
+  background-color: #0056b3;
+  transform: scale(1.05);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Logo Styling */
+.logo a {
+  font-size: 1.5rem;
+  font-weight: bold;
+  text-decoration: none;
+  color: #e1b382;
+  transition: transform 0.3s ease-in-out;
+}
+.logo a:hover {
+  transform: scale(1.1);
+}
+
+/* Main Content Area */
+.main-content {
+  flex: 1;
+  padding: 2rem;
+  padding-top: 80px; /* Account for fixed header */
+  background-color: #f2f7f0;
+  min-height: calc(100vh - 80px);
+}
+.dark .main-content {
+  background-color: #121212;
+}
+
+/* Connection Message */
+.connection-message {
+  margin-top: 20px;
+  padding: 10px;
+  border-radius: 5px;
+}
+.connection-message .success {
+  color: #4CAF50;
+  background-color: rgba(76, 175, 80, 0.1);
+  padding: 10px;
+  border-radius: 5px;
+}
+.connection-message .error {
+  color: #f44336;
+  background-color: rgba(244, 67, 54, 0.1);
+  padding: 10px;
+  border-radius: 5px;
+}
+
+/* Footer Styles */
 footer {
-    background-color: #e4eee2;
-    color: #0b0b0b;
-    text-align: center;
-    padding: 1rem;
+  background-color: #e4eee2;
+  color: #0b0b0b;
+  text-align: center;
+  padding: 1rem;
 }
+.dark footer {
+  background-color: #1e1e1e;
+  color: white;
+}
+.footer-status {
+  font-size: 0.8rem;
+  margin-top: 10px;
+  color: #666;
+}
+.dark .footer-status {
+  color: #aaa;
+}
+
+/* Mobile Styles */
 @media (max-width: 768px) {
-    .app-header nav ul {
-      flex-direction: column;
-      align-items: center;
-    }
-    .app-header nav ul li {
-      margin-bottom: 10px;
-    }
-    .main-content {
-      padding: 1rem;
-    }
+  .hamburger {
+      display: block;
+      font-size: 30px;
+      cursor: pointer;
+      color: #e1b382;
   }
   
   
+  .nav {
+      display: none;
+      position: absolute;
+      top: 70px;
+      left: 0;
+      width: 100%;
+      background-color: #2d545e;
+      padding: 1rem;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  .nav.open {
+      display: flex;
+  }
+  .nav ul {
+      flex-direction: column;
+      width: 100%;
+  }
+  .nav ul li {
+      margin: 10px 0;
+  }
+  .connection-badge {
+      display: none; /* Hide badge on mobile for space */
+  }
+  .main-content {
+      padding: 1rem;
+      padding-top: 70px;
+  }
+}
+
+/* Page Transition Animation */
+.main-content {
+  opacity: 0;
+  animation: fadeIn 1s forwards;
+}
+@keyframes fadeIn {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}

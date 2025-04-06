@@ -12,100 +12,50 @@ import React, { useEffect, useState } from "react";
 import "../styles/Appointment.css";
 
 import { getAppointments } from "../services/api"; // Import API function
- 
-// import './styles/dark-mode.css';
-// import './styles/header.css';
-// import './styles/navigation.css';
-// import './styles/buttons.css';
-// import './styles/dropdown.css';
-// import './styles/footer.css';
-// import './styles/layout.css';
 
-
-
-const Home = () => {
-    const [dropdownOpen, setDropdownOpen] = useState(false);
-    const [menuOpen, setMenuOpen] = useState(false);
-    const [darkMode, setDarkMode] = useState(false); // Dark mode state
-
-
-    // Toggle dark mode
-    const toggleDarkMode = () => {
-        setDarkMode(!darkMode);
-    };
-    const [appointments, setAppointments] = useState([]);
+const AppointmentList = () => {
+    const [appointments, setAppointments] = useState([]); // Initialize as empty array
+    const [loading, setLoading] = useState(true); // Track loading state
+    const [error, setError] = useState(null); // Track errors
 
     useEffect(() => {
         getAppointments()
-            .then(response => setAppointments(response.data))
-            .catch(error => console.error("Error fetching appointments:", error));
+            .then(data => {
+                if (Array.isArray(data)) {
+                    setAppointments(data);
+                } else {
+                    console.error("Unexpected data format:", data);
+                    setError("Failed to load appointments.");
+                }
+            })
+            .catch(error => {
+                console.error("Error fetching appointments:", error);
+                setError("Error fetching appointments. Please try again.");
+            })
+            .finally(() => setLoading(false));
     }, []);
 
 
     return (
-        <div className={darkMode ? "app-container dark" : "app-container"}>
-                {/* Header */}
-                <header className="app-header sticky-header">
-                    <div className="logo">
-                        <Link to="/">🏥 HealthCare</Link>
-                    </div>
-                    {/* Mobile Hamburger Menu */}
-                    <div className="hamburger" onClick={() => setMenuOpen(!menuOpen)}><h3>ham</h3>
-                    </div>
-                    <nav className={menuOpen ? "nav open" : "nav"}>
-                        <ul>
-                            <li><Link to="/home">Home</Link></li>
-                            <li><Link to="/appointments">Appointments</Link></li>
-                            {/* Telemedicine Dropdown */}
-                            <li
-                                className="dropdown"
-                                onMouseEnter={() => setDropdownOpen(true)}
-                                onMouseLeave={() => setDropdownOpen(false)}
-                            >
-                                <Link to="/telemedicine" className="dropdown-toggle">
-                                    Telemedicine ⏷
-                                </Link>
-                                {dropdownOpen && (
-                                    <ul className="dropdown-menu">
-                                        <li><Link to="/video-consult" style={{color:"black",fontSize:"15px", margin:"0px -10px"}}>📹 Video Consult</Link></li>
-                                        <li><Link to="/chat-consult" style={{color:"black",fontSize:"15px",margin:"-10px -10px"}}>💬 Chat Consult</Link></li>
-                                    </ul>
-                                )}
-                            </li>
-                        </ul>
-                    </nav>
-                    {/* Dark Mode Toggle */}
-                    <button className="dark-mode-toggle" onClick={toggleDarkMode}>
-                        {darkMode ? "☀️ Light Mode" : "🌙 Dark Mode"}
-                    </button>
-                </header>
-                {/* Main Content Area */}
-                <div className="main-content">
-                    <Routes>
-                            <Route path="/" element={
-                                <div className="appoint-main">
-                                    <h2><center>Appointments</center></h2>
-                                    <ul>
-                                        <li><link to="/telemedicine"></link></li>
-                                        <li><link to="/video-consult" ></link></li>
-                                        <li><link to="/telemedicine"></link></li>
-                                    </ul>
-                    
-                                </div>
-                            }/>
-                        <Route path="/home" element={<Home />} />
-                        <Route path="/appointments" element={<AppointmentList />} />
-                        <Route path="/telemedicine" element={<Telemedicine />} />
-                        <Route path="/video-consult" element={<VideoConsult />} />
-                        <Route path="/chat-consult" element={<ChatConsult />} />
-                    </Routes>
-                </div>
+        <div className="centered-content">
+            <h2><center>Appointments</center></h2>
 
-                {/* Footer */}
-                <footer>
-                    <p>© 2025 Healthcare Web App | All Rights Reserved</p>
-                </footer>
-            </div>
+            {loading ? (
+                <p>Loading appointments...</p>
+            ) : error ? (
+                <p style={{ color: "red" }}>{error}</p>
+            ) : appointments.length > 0 ? (
+                <ul>
+                    {appointments.map(appointment => (
+                        <li key={appointment.id || Math.random()}>
+                            {appointment.doctor_name} - {appointment.date}
+                        </li>
+                    ))}
+                </ul>
+            ) : (
+                <p>No appointments available.</p>
+            )}
+        </div>
     );
     
 };
