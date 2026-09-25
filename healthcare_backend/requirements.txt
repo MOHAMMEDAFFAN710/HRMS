@@ -81,6 +81,8 @@ pydantic_core==2.23.4
 Pygments==2.18.0
 pyparsing==3.1.4
 pyunormalize==16.0.0
+python-socketio==5.11.4
+eventlet==0.38.2
 
 regex==2024.11.6
 requests==2.32.3

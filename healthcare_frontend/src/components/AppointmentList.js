@@ -1,19 +1,17 @@
 
 
-import { BrowserRouter as Router, Routes, Route, Link, Navigate } from "react-router-dom";
+import { Routes, Route, Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-// import AppointmentList from "../components/AppointmentList";
 import Home from "../pages/Home";
 import Telemedicine from "../pages/Telemedicine";
 import VideoConsult from "../pages/VideoConsult";
 import ChatConsult from "../pages/ChatConsult1";
-import "../App.css"; // Ensure CSS is linked for styling
-import myImage from "./health-report.png";
+import "../App.css";
 
 import React, { useEffect, useState } from "react";
 import "../styles/Appointment.css";
 
-import { getAppointments } from "../services/api"; // Import API function
+import { getAppointments } from "../services/api";
  
 // import './styles/dark-mode.css';
 // import './styles/header.css';
@@ -28,7 +26,7 @@ import { getAppointments } from "../services/api"; // Import API function
 const AppointmentList = () => {
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const [menuOpen, setMenuOpen] = useState(false);
-    const [darkMode, setDarkMode] = useState(false); // Dark mode state
+    const [darkMode, setDarkMode] = useState(false);
 
     const navigate = useNavigate();
 
@@ -40,7 +38,7 @@ const AppointmentList = () => {
     const toggleDarkMode = () => {
         setDarkMode(!darkMode);
     };
-    const [appointments, setAppointments] = useState([]);
+    const [, setAppointments] = useState([]);
 
     useEffect(() => {
         getAppointments()

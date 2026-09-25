@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import "./../styles/AuthForm.css";
+import { Link, useNavigate } from "react-router-dom";
+import AuthExperience from "../components/AuthExperience";
 
 const Login = () => {
     const [email, setEmail] = useState("");
@@ -18,14 +18,16 @@ const Login = () => {
     };
 
     return (
-        <div className="auth-form">
-            <h2>Login</h2>
-            <form onSubmit={handleLogin}>
-                <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-                <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} required />
-                <button type="submit">Login</button>
+        <AuthExperience mode="login">
+            <h2>Enter your care space</h2>
+            <p className="auth-intro">Pick up where you left off, with everything important kept close.</p>
+            <form className="auth-form" onSubmit={handleLogin}>
+                <div className="auth-field"><label htmlFor="login-email">Email address</label><input id="login-email" type="email" placeholder="you@example.com" value={email} onChange={(e) => setEmail(e.target.value)} required /></div>
+                <div className="auth-field"><label htmlFor="login-password">Password</label><input id="login-password" type="password" placeholder="Your password" value={password} onChange={(e) => setPassword(e.target.value)} required /></div>
+                <button className="auth-submit" type="submit">Continue securely <span>↗</span></button>
             </form>
-        </div>
+            <p className="auth-switch">New to careline? <Link to="/register">Create your space</Link></p>
+        </AuthExperience>
     );
 };
 

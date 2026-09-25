@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { BrowserRouter as Router, Routes, Route, Link, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import axios from 'axios';
 import AppointmentList from './components/AppointmentList';
 import Telemedicine from './pages/Telemedicine';
@@ -7,6 +7,7 @@ import VideoConsult from './pages/VideoConsult';
 import ChatConsult from './pages/ChatConsult';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import ExperienceLanding from './components/ExperienceLanding';
 import './App.css';
 
 // Create Auth Context
@@ -93,120 +94,11 @@ const ProtectedRoute = ({ children }) => {
 
 // Main App Component
 const App = () => {
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [darkMode, setDarkMode] = useState(false);
-  const [backendStatus, setBackendStatus] = useState('Checking connection...');
-  const [connectionTested, setConnectionTested] = useState(false);
-  const { user, logout } = useContext(AuthContext);
-
-  // Test backend connection on component mount
-  useEffect(() => {
-    const testBackendConnection = async () => {
-      try {
-        const response = await apiService.testConnection();
-        setBackendStatus(`Backend: ${response.data.status}`);
-      } catch (error) {
-        setBackendStatus('Backend: Connection failed!');
-        console.error('Backend connection error:', error);
-      } finally {
-        setConnectionTested(true);
-      }
-    };
-
-    testBackendConnection();
-  }, []);
-
-  const toggleDarkMode = () => {
-    setDarkMode(!darkMode);
-  };
-
   return (
-    <div className={darkMode ? "app-container dark" : "app-container"}>
-      {/* Header */}
-      <header className="app-header sticky-header">
-        <div className="logo">
-          <Link to="/">🏥 HealthCare</Link>
-        </div>
-        
-        {/* Connection status badge */}
-        {connectionTested && (
-          <div className={`connection-badge ${backendStatus.includes('failed') ? 'error' : 'success'}`}>
-            {backendStatus}
-          </div>
-        )}
-
-        {/* Mobile Hamburger Menu */}
-        <div className="hamburger" onClick={() => setMenuOpen(!menuOpen)}>
-          &#9776;
-        </div>
-
-        <nav className={menuOpen ? "nav open" : "nav"}>
-          <ul>
-            <li><Link to="/">Home</Link></li>
-            <li><Link to="/appointments">Appointments</Link></li>
-
-            {/* Telemedicine Dropdown */}
-            <li
-              className="dropdown"
-              onMouseEnter={() => setDropdownOpen(true)}
-              onMouseLeave={() => setDropdownOpen(false)}
-            >
-              <Link to="/telemedicine" className="dropdown-toggle">
-                Telemedicine ⏷
-              </Link>
-              {dropdownOpen && (
-                <ul className="dropdown-menu">
-                  <li><Link to="/video-consult">📹 Video Consult</Link></li>
-                  <li><Link to="/chat-consult">💬 Chat Consult</Link></li>
-                </ul>
-              )}
-            </li>
-
-            {/* Auth Links */}
-            {user ? (
-              <li>
-                <button onClick={logout} className="logout-button">
-                  Logout
-                </button>
-              </li>
-            ) : (
-              <>
-                <li><Link to="/login">Login</Link></li>
-                <li><Link to="/register">Register</Link></li>
-              </>
-            )}
-          </ul>
-        </nav>
-
-        {/* Dark Mode Toggle */}
-        <button className="dark-mode-toggle" onClick={toggleDarkMode}>
-        {darkMode ? "☀️ Light Mode" : "🌙 Dark Mode"}
-        </button>
-    </header>
-
-      {/* Main Content Area */}
-    <div className="main-content">
+    <div className="app-container">
+      <div className="main-content">
         <Routes>
-        <Route path="/" element={
-            <div className="centered-content">
-        <h1>Welcome To The Healthcare App</h1>
-            <div className="connection-message">
-                {!connectionTested ? (
-            <p>Testing backend connection...</p>
-                ) : (
-                <p className={backendStatus.includes('failed') ? 'error' : 'success'}>
-                    {backendStatus}
-                </p>
-                )}
-            </div>
-            {user && (
-                <div className="user-welcome">
-        Welcome, {user.username}!
-                </div>
-            )}
-            </div>
-        } />
+        <Route path="/" element={<ExperienceLanding />} />
         <Route path="/appointments" element={
             <ProtectedRoute>
             <AppointmentList />
@@ -230,17 +122,7 @@ const App = () => {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         </Routes>
-    </div>
-
-      {/* Footer */}
-    <footer>
-        <p>© 2025 Healthcare Web App | All Rights Reserved</p>
-        {connectionTested && (
-        <p className="footer-status">
-            Backend Status: {backendStatus}
-        </p>
-        )}
-    </footer>
+      </div>
     </div>
 );
 };

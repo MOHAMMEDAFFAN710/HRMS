@@ -1,9 +1,8 @@
 import React, { useRef, useState } from 'react';
-import SimplePeer from 'simple-peer';
 import "../styles/video.css";
 
 function VideoConsult() {
-const [stream, setStream] = useState(null);
+const [, setStream] = useState(null);
 const videoRef = useRef();
 
 const startVideo = async () => {

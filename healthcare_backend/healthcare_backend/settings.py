@@ -80,8 +80,11 @@ CORS_ALLOWED_ORIGINS = [
 CSRF_TRUSTED_ORIGINS = CORS_ALLOWED_ORIGINS.copy()
 
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, '../frontend/build/static'),
+    os.path.join(BASE_DIR.parent, 'healthcare_frontend', 'build', 'static'),
 ]
+
+# Only include this directory if the frontend build exists.
+STATICFILES_DIRS = [path for path in STATICFILES_DIRS if os.path.isdir(path)]
 
 
 ROOT_URLCONF = 'healthcare_backend.urls'
