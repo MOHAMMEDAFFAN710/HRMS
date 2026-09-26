@@ -1,31 +1,67 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import io from 'socket.io-client';
-import logo from './logo.jpg'; // Updated to .jpg
 
-// Connect to the WebSocket server
-const socket = io('http://localhost:8000');
+const SOCKET_URL = process.env.REACT_APP_SOCKET_URL || 'http://localhost:8000';
+const socket = io(SOCKET_URL, {
+  transports: ['websocket'],
+  autoConnect: true,
+});
 
 function ChatConsult() {
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState([]);
+  const [isConnected, setIsConnected] = useState(false);
+  const chatEndRef = useRef(null);
 
-  // Listen for incoming messages from the server
   useEffect(() => {
-    socket.on('message', (msg) => {
-      setMessages((prev) => [...prev, msg]);
-    });
+    const handleConnect = () => setIsConnected(true);
+    const handleDisconnect = () => setIsConnected(false);
+    const handleIncomingMessage = (payload) => {
+      const nextMessage = typeof payload === 'string'
+        ? { text: payload, sender: 'doctor', id: `${Date.now()}-${Math.random()}` }
+        : { ...payload, id: payload.id || `${Date.now()}-${Math.random()}` };
 
-    // Clean up socket connection on component unmount
+      setMessages((prev) => [...prev, nextMessage]);
+    };
+
+    socket.on('connect', handleConnect);
+    socket.on('disconnect', handleDisconnect);
+    socket.on('message', handleIncomingMessage);
+
     return () => {
-      socket.off('message');
+      socket.off('connect', handleConnect);
+      socket.off('disconnect', handleDisconnect);
+      socket.off('message', handleIncomingMessage);
     };
   }, []);
 
-  // Send message to the server
+  useEffect(() => {
+    if (chatEndRef.current) {
+      chatEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [messages]);
+
   const sendMessage = () => {
-    if (message.trim() !== '') {
-      socket.emit('message', message);
-      setMessage('');
+    const trimmedMessage = message.trim();
+
+    if (!trimmedMessage) {
+      return;
+    }
+
+    const outgoingMessage = {
+      text: trimmedMessage,
+      sender: 'patient',
+      id: `${Date.now()}-${Math.random()}`,
+    };
+
+    socket.emit('message', trimmedMessage);
+    setMessages((prev) => [...prev, outgoingMessage]);
+    setMessage('');
+  };
+
+  const handleKeyDown = (event) => {
+    if (event.key === 'Enter') {
+      sendMessage();
     }
   };
 
@@ -33,85 +69,125 @@ function ChatConsult() {
     <div
       style={{
         minHeight: '100vh',
-        backgroundColor: '#f0f9ff',
+        background: 'linear-gradient(135deg, #f0f9ff 0%, #e6f4ff 100%)',
         display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'center',
         alignItems: 'center',
-        padding: '20px',
+        justifyContent: 'center',
+        padding: '24px',
+        fontFamily: 'Arial, sans-serif',
       }}
     >
-      {/* Logo Section */}
-      <div style={{ marginBottom: '20px', textAlign: 'center' }}>
-        <img
-          src={logo}
-          alt="AI Logo"
-          style={{
-            width: '100px',
-            height: '100px',
-            borderRadius: '50%', // Circular shape
-            border: '2px solid #e5a868', // Border color
-            marginBottom: '10px',
-          }}
-        />
-      </div>
-
-      {/* Chat Box Container */}
       <div
         style={{
           width: '100%',
-          maxWidth: '500px',
-          backgroundColor: '#fff',
-          padding: '20px',
-          borderRadius: '12px',
-          boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+          maxWidth: '560px',
+          background: '#ffffff',
+          borderRadius: '18px',
+          boxShadow: '0 10px 30px rgba(0, 0, 0, 0.08)',
+          padding: '24px',
+          border: '1px solid #dfeefb',
         }}
       >
-        <h2 style={{ color: '#e5a868', marginBottom: '20px' }}>
-          Chat with Doctor
-        </h2>
-
-        {/* Message Display Section */}
         <div
           style={{
-            height: '300px',
-            overflowY: 'auto',
-            border: '1px solid #ccc',
-            padding: '10px',
-            borderRadius: '8px',
-            marginBottom: '10px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            marginBottom: '16px',
           }}
         >
-          {messages.map((msg, index) => (
-            <p key={index} style={{ margin: '5px 0', color: '#333' }}>
-              {msg}
-            </p>
-          ))}
+          <h2 style={{ margin: 0, color: '#e5a868' }}>Chat with Doctor</h2>
+          <span
+            style={{
+              background: isConnected ? '#d9fbe5' : '#fef3c7',
+              color: isConnected ? '#166534' : '#92400e',
+              borderRadius: '999px',
+              padding: '6px 10px',
+              fontSize: '12px',
+              fontWeight: '600',
+            }}
+          >
+            {isConnected ? 'Online' : 'Connecting...'}
+          </span>
         </div>
 
-        {/* Input Field and Send Button */}
+        <div
+          style={{
+            height: '320px',
+            overflowY: 'auto',
+            border: '1px solid #dfeaf5',
+            borderRadius: '12px',
+            padding: '14px',
+            background: '#f8fbff',
+            marginBottom: '14px',
+          }}
+        >
+          {messages.length === 0 ? (
+            <p style={{ margin: 0, color: '#6b7280', textAlign: 'center', paddingTop: '110px' }}>
+              No messages yet. Start the conversation.
+            </p>
+          ) : (
+            messages.map((msg) => {
+              const text = typeof msg === 'string' ? msg : msg.text || '';
+              const isPatient = typeof msg !== 'string' ? msg.sender === 'patient' : false;
+
+              return (
+                <div
+                  key={msg.id || `${text}-${Math.random()}`}
+                  style={{
+                    display: 'flex',
+                    justifyContent: isPatient ? 'flex-end' : 'flex-start',
+                    marginBottom: '10px',
+                  }}
+                >
+                  <div
+                    style={{
+                      maxWidth: '75%',
+                      padding: '10px 12px',
+                      borderRadius: '12px',
+                      background: isPatient ? '#e5a868' : '#eaf3ff',
+                      color: isPatient ? '#fff' : '#1f2937',
+                      boxShadow: '0 1px 3px rgba(0, 0, 0, 0.06)',
+                    }}
+                  >
+                    {text}
+                  </div>
+                </div>
+              );
+            })
+          )}
+          <div ref={chatEndRef} />
+        </div>
+
         <div style={{ display: 'flex', gap: '10px' }}>
           <input
             type="text"
             value={message}
             onChange={(e) => setMessage(e.target.value)}
+            onKeyDown={handleKeyDown}
             placeholder="Type a message..."
+            disabled={!isConnected}
             style={{
               flex: 1,
-              padding: '10px',
-              border: '1px solid #ccc',
-              borderRadius: '8px',
+              padding: '12px 14px',
+              border: '1px solid #d0d9e8',
+              borderRadius: '10px',
+              outline: 'none',
+              fontSize: '14px',
+              background: isConnected ? '#fff' : '#f3f4f6',
             }}
           />
           <button
             onClick={sendMessage}
+            disabled={!isConnected || !message.trim()}
             style={{
-              backgroundColor: '#e5a868',
+              background: !isConnected || !message.trim() ? '#d1d5db' : '#e5a868',
               color: '#fff',
-              padding: '10px 20px',
-              borderRadius: '8px',
+              padding: '12px 18px',
+              borderRadius: '10px',
               border: 'none',
-              cursor: 'pointer',
+              cursor: !isConnected || !message.trim() ? 'not-allowed' : 'pointer',
+              fontWeight: '600',
             }}
           >
             Send
