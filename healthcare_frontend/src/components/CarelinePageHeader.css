@@ -1,0 +1,31 @@
+.careline-page-header {
+    --care-ink: #102326;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: 24px;
+    min-height: 76px;
+    padding: 12px clamp(20px, 4vw, 60px);
+    border-bottom: 1px solid rgba(16, 35, 38, .12);
+    background: #f2f5ee;
+    color: var(--care-ink);
+    font-family: 'Manrope', sans-serif;
+}
+.careline-page-brand { display: inline-flex; align-items: center; gap: 8px; width: max-content; color: inherit; font: 700 17px 'Manrope', sans-serif; text-decoration: none; }
+.careline-page-brand span { display: inline-grid; width: 22px; height: 22px; place-items: center; border: 1px solid currentColor; border-radius: 50%; color: #e27b62; font-size: 22px; line-height: 1; }
+.careline-page-header > nav { display: flex; flex-wrap: wrap; justify-content: center; gap: clamp(14px, 2.5vw, 34px); }
+.careline-page-header > nav a { color: rgba(16, 35, 38, .72); font-size: 11px; font-weight: 600; text-decoration: none; }
+.careline-page-header > nav a:hover, .careline-page-header > nav a[aria-current="page"] { color: #327a78; }
+.care-account-actions { display: flex; align-items: center; justify-content: flex-end; gap: 14px; }
+.care-account-name { max-width: 180px; overflow: hidden; color: rgba(16, 35, 38, .56); font-size: 10px; text-overflow: ellipsis; white-space: nowrap; }
+.care-account-actions button { padding: 8px 12px; border: 1px solid rgba(16, 35, 38, .24); border-radius: 2px; color: var(--care-ink); background: transparent; font: 600 10px 'Manrope', sans-serif; cursor: pointer; transition: color .2s ease, background .2s ease, border-color .2s ease; }
+.care-account-actions button:hover { border-color: var(--care-ink); color: #f2f5ee; background: var(--care-ink); }
+@media (max-width: 700px) {
+    .careline-page-header { grid-template-columns: 1fr auto; gap: 12px; padding: 14px 6vw; }
+    .careline-page-header > nav { grid-column: 1 / -1; grid-row: 2; justify-content: flex-start; gap: 20px; padding-top: 8px; }
+    .care-account-actions { grid-column: 2; grid-row: 1; }
+}
+@media (max-width: 390px) {
+    .care-account-name { display: none; }
+    .careline-page-header > nav { gap: 14px; }
+}

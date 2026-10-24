@@ -1,6 +1,6 @@
 from django.urls import re_path
-from api.consumers import MyConsumer  # Create a WebSocket consumer
+from api.consumers import ConsultationConsumer
 
 websocket_urlpatterns = [
-    re_path(r"ws/socket.io/", MyConsumer.as_asgi()),
+    re_path(r"ws/consultations/(?P<room_id>[A-Za-z0-9_-]+)/$", ConsultationConsumer.as_asgi()),
 ]

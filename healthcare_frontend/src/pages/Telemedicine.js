@@ -1,33 +1,39 @@
-import React from "react";
+import React, { useContext, useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import gsap from "gsap";
+import API from "../services/api";
+import { useLanguage } from "../contexts/LanguageContext";
+import { AuthContext } from "../contexts/AuthContext";
+import AccountActions from "../components/AccountActions";
 import "../styles/telemedicine.css";
-const Telemedicine = () => {
-return (
-    <div className="telemedicine-container">
-    <h1>Telemedicine Consultation</h1>
 
-      {/* Video Call Section */}
-    <div className="video-section">
-        <p>Doctor-Patient Video Call Interface (To be implemented)</p>
-    </div>
+const formatDate = (value) => new Date(value).toLocaleString([], { dateStyle: "medium", timeStyle: "short" });
+const priceOptions = [["", "anyPrice"], ["100", "under100"], ["200", "between100200"], ["200plus", "over200"]];
 
-      {/* Appointment Booking Form */}
-    <div className="appointment-form">
-        <h2>Book an Appointment</h2>
-        <form>
-        <input type="text" placeholder="Your Name" required />
-        <input type="email" placeholder="Email" required />
-        <input type="datetime-local" required />
-        <button type="submit">Book Now</button>
-        </form>
-    </div>
-
-      {/* Patient Medical Records */}
-    <div className="medical-records">
-        <h2>Your Medical History</h2>
-        <p>Previous consultations and prescriptions (To be fetched from backend)</p>
-    </div>
-    </div>
-);
-};
+function Telemedicine() {
+    const { user } = useContext(AuthContext);
+    const { language, changeLanguage, t } = useLanguage();
+    const copy = t.telemedicine;
+    const [doctors, setDoctors] = useState([]); const [appointments, setAppointments] = useState([]); const [consultations, setConsultations] = useState([]); const [prescriptions, setPrescriptions] = useState([]); const [notifications, setNotifications] = useState([]);
+    const [slots, setSlots] = useState([]); const [selectedDoctor, setSelectedDoctor] = useState(null); const [selectedConcern, setSelectedConcern] = useState(""); const [filters, setFilters] = useState({ language: "", max_fee: "", available: false, online_now: false, specialization: "" }); const [message, setMessage] = useState(""); const [loading, setLoading] = useState(true); const [searching, setSearching] = useState(false);
+    const selectedOption = copy.concerns.find(([id]) => id === selectedConcern); const selectedSpecialization = selectedOption?.[2] || ""; const concernLabel = selectedOption?.[1] || "";
+    const loadPatientData = async () => { const results = await Promise.all([API.getAppointments(), API.getConsultations(), API.getPrescriptions(), API.getNotifications()]); setAppointments(results[0].data); setConsultations(results[1].data); setPrescriptions(results[2].data); setNotifications(results[3].data); };
+    const loadDoctors = async (nextFilters = filters, concern = selectedConcern) => { setSearching(true); try { const params = { ...nextFilters, specialization: nextFilters.specialization || (copy.concerns.find(([id]) => id === concern)?.[2] || "") }; if (params.max_fee === "200") { params.min_fee = 100; params.max_fee = 200; } if (params.max_fee === "200plus") { params.min_fee = 200; delete params.max_fee; } if (!params.max_fee) delete params.max_fee; if (!params.min_fee) delete params.min_fee; setDoctors((await API.getDoctors(params)).data); } catch (error) { setMessage(error.response?.data?.error || "We could not find clinicians right now."); } finally { setSearching(false); } };
+    useEffect(() => { const load = async () => { try { await Promise.all([loadDoctors(), loadPatientData()]); } catch (error) { setMessage("We could not load your care space."); } finally { setLoading(false); } }; load(); }, [language]);
+    useEffect(() => { if (!loading) gsap.fromTo(".discovery-card", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: .5, stagger: .06, ease: "power2.out" }); }, [doctors, loading]);
+    const chooseConcern = (id) => { setSelectedConcern(id); setSelectedDoctor(null); loadDoctors(filters, id); };
+    const updateFilter = (key, value) => { const next = { ...filters, [key]: value }; setFilters(next); loadDoctors(next); };
+    const chooseDoctor = async (doctor) => { setSelectedDoctor(doctor); setSlots((await API.getDoctorSlots(doctor.id)).data); };
+    const bookSlot = async (slot) => { try { await API.createAppointment({ doctor_id: selectedDoctor.id, ...slot, reason: concernLabel || copy.hero }); setMessage(t.bookingSuccess); await loadPatientData(); setSlots((current) => current.filter((item) => item.start_at !== slot.start_at)); } catch (error) { setMessage(error.response?.data?.error || t.bookingError); } };
+    const cancelAppointment = async (appointment) => { try { await API.transitionAppointment(appointment.id, "CANCELLED"); await loadPatientData(); } catch (error) { setMessage(error.response?.data?.error || "This appointment cannot be cancelled now."); } };
+    if (loading) return <div className="telemedicine-container"><p>{t.loading}</p></div>;
+    return <main className="telemedicine-container"><header className="telemedicine-nav"><Link to="/" className="telemedicine-brand"><span>◌</span> careline</Link><nav><Link to="/appointments">{t.myAppointments}</Link><Link to="/profile">{t.profile}</Link>{user?.role === "doctor" && <Link to="/dataset">Dataset</Link>}</nav><div className="telemedicine-nav-actions"><label className="language-switcher"><span className="sr-only">{t.language}</span><select value={language} onChange={(event) => changeLanguage(event.target.value)} aria-label={t.language}><option value="en">EN</option><option value="hi">हि</option></select></label><AccountActions /></div></header>
+        <section className="care-hero discovery-hero"><div className="care-hero-copy"><p className="eyebrow"><span className="status-dot" /> {copy.eyebrow}</p><h1>{copy.hero}</h1><p>{copy.intro}</p><div className="care-hero-actions"><a href="#concerns" className="care-button">{copy.start} <span>↘</span></a><Link to="/profile" className="quiet-link">{copy.addDetails} <span>↗</span></Link></div></div><div className="care-hero-art" aria-hidden="true"><div className="care-orbit orbit-a" /><div className="care-orbit orbit-b" /><div className="care-signal"><span /><span /><span /></div><p>01 / 03</p></div></section>
+        {message && <p role="status" className="telemedicine-message">{message}</p>}
+        <section className="care-section concern-section" id="concerns"><div className="section-heading"><div><p className="eyebrow">01 / {copy.begin}</p><h2>{copy.choose}</h2></div><p className="section-note">{copy.chooseNote}</p></div><div className="concern-grid">{copy.concerns.map(([id, label, specialization], index) => <button className={`concern-card discovery-card ${selectedConcern === id ? "selected" : ""}`} key={id} onClick={() => chooseConcern(id)}><span>0{index + 1}</span><strong>{label}</strong><small>{selectedConcern === id ? `${copy.lookingFor} ${specialization}` : copy.concern}</small></button>)}</div></section>
+        <section className="care-section matching-section"><div className="section-heading"><div><p className="eyebrow">02 / {copy.matching}</p><h2>{selectedConcern ? `${copy.professionals}: ${concernLabel}` : copy.professionals}</h2></div><p className="section-note">{selectedConcern ? `${copy.suggested}: ${selectedSpecialization}. ${copy.refine}` : copy.chooseConcern}</p></div><div className="filter-panel"><label>{t.language}<select value={filters.language} onChange={(event) => updateFilter("language", event.target.value)}><option value="">{copy.anyLanguage}</option><option>Hindi</option><option>English</option><option>Marathi</option><option>Urdu</option><option>Gujarati</option></select></label><label>{t.specialization === "Specialization" ? "Consultation fee" : "परामर्श शुल्क"}<select value={filters.max_fee === "100" ? "100" : filters.min_fee === 100 && filters.max_fee === 200 ? "200" : filters.min_fee === 200 ? "200plus" : ""} onChange={(event) => { const value = event.target.value; const next = { ...filters, min_fee: undefined, max_fee: value === "100" ? "100" : undefined }; if (value === "200") { next.min_fee = 100; next.max_fee = 200; } if (value === "200plus") next.min_fee = 200; setFilters(next); loadDoctors(next); }}>{priceOptions.map(([value, label]) => <option value={value} key={value}>{label === "anyPrice" ? copy.anyPrice : label === "under100" ? "Free / Subsidized · Under ₹100" : label === "between100200" ? "₹100–₹200" : "₹200+"}</option>)}</select></label><label>{t.specialization}<select value={filters.specialization} onChange={(event) => updateFilter("specialization", event.target.value)}><option value="">{t.specialization}</option>{[...new Set(doctors.map((doctor) => doctor.specialization))].map((specialization) => <option key={specialization}>{specialization}</option>)}</select></label><label className="check-filter"><input type="checkbox" checked={filters.available} onChange={(event) => updateFilter("available", event.target.checked)} /> {copy.hasAvailability}</label><label className="check-filter"><input type="checkbox" checked={filters.online_now} onChange={(event) => updateFilter("online_now", event.target.checked)} /> {copy.onlineNow}</label></div>{searching ? <p className="empty-state">{copy.finding}</p> : <div className="doctor-grid matching-grid">{doctors.map((doctor) => <article className="doctor-card discovery-card" key={doctor.id}><div className="doctor-avatar">{doctor.avatar_initials}</div><div className="doctor-card-top"><p className="doctor-specialty">{doctor.specialization}</p><span className={doctor.online_now ? "online-status online" : "online-status"}>{doctor.online_now ? copy.onlineNow : copy.offline}</span></div><h3>Dr. {doctor.user?.first_name} {doctor.user?.last_name}</h3><p className="doctor-meta">{doctor.experience_years} {copy.years} · {(doctor.languages || []).join(", ")}</p><p className="doctor-meta">₹{doctor.consultation_fee} {copy.configuredFee}</p><p>{doctor.next_available_at ? `${copy.nextAvailable} ${formatDate(doctor.next_available_at)}` : copy.noAvailable}</p><button className="text-button" onClick={() => chooseDoctor(doctor)}>{copy.availableTimes || t.availableTimes} <span>↗</span></button></article>)}{!doctors.length && <p className="empty-state">{copy.noMatches}</p>}</div>}</section>
+        {selectedDoctor && <section className="care-section slots-section"><div className="section-heading"><div><p className="eyebrow">03 / {copy.book}</p><h2>{copy.chooseDoctorTime} Dr. {selectedDoctor.user?.last_name}</h2></div><p className="section-note">{copy.bookingNote}</p></div><div className="slot-grid">{slots.map((slot) => <button className="slot" key={slot.start_at} onClick={() => bookSlot(slot)}><strong>{formatDate(slot.start_at)}</strong><span>{copy.bookThis} ↗</span></button>)}{!slots.length && <p className="empty-state">{copy.noAvailable}</p>}</div></section>}
+        <section className="care-section records-section"><div className="section-heading"><div><p className="eyebrow">{copy.careTimeline}</p><h2>{copy.recordsTitle}</h2></div></div><div className="care-columns"><div className="record-column">{appointments.length ? appointments.map((appointment) => <article className="timeline-item" key={appointment.id}><div><strong>{formatDate(appointment.start_at)}</strong><span>Dr. {appointment.doctor?.user?.last_name} · {appointment.status}</span></div>{["BOOKED", "CONFIRMED"].includes(appointment.status) && <button onClick={() => cancelAppointment(appointment)}>{t.cancel}</button>}</article>) : <p className="empty-state">{copy.noAppointments}</p>}</div><div className="record-column"><p className="eyebrow">{copy.history}</p>{consultations.map((consultation) => <article className="timeline-item" key={consultation.id}><div><strong>{formatDate(consultation.started_at || consultation.appointment?.start_at)}</strong><span>{consultation.notes || copy.completed}</span></div></article>)}{prescriptions.map((prescription) => <article className="timeline-item" key={`rx-${prescription.id}`}><div><strong>{copy.prescription} · {formatDate(prescription.created_at)}</strong><span>{prescription.medicines.map((medicine) => `${medicine.name || medicine} ${medicine.dosage || ""}`).join(", ")}</span></div></article>)}</div><div className="record-column"><p className="eyebrow">{copy.notifications}</p>{notifications.slice(0, 5).map((notification) => <article className="timeline-item" key={notification.id}><div><strong>{notification.title}</strong><span>{notification.message}</span></div></article>)}{!notifications.length && <p className="empty-state">{copy.noNotifications}</p>}</div></div></section><footer className="telemedicine-footer"><span>careline / 2026</span><Link to="/">{copy.back} ↑</Link></footer></main>;
+}
 
 export default Telemedicine;

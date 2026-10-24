@@ -30,6 +30,11 @@ ALLOWED_HOSTS = []
 
 AUTH_USER_MODEL = 'api.User'  # Replace 'api' with your actual app name
 
+WEBRTC_STUN_URL = os.environ.get("WEBRTC_STUN_URL", "stun:stun.l.google.com:19302")
+WEBRTC_TURN_URLS = os.environ.get("WEBRTC_TURN_URLS", "")
+WEBRTC_TURN_SHARED_SECRET = os.environ.get("WEBRTC_TURN_SHARED_SECRET", "")
+WEBRTC_TURN_CREDENTIAL_TTL = int(os.environ.get("WEBRTC_TURN_CREDENTIAL_TTL", "3600"))
+
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication',
@@ -105,6 +110,25 @@ TEMPLATES = [
     },
 ]
 ASGI_APPLICATION = "healthcare_backend.asgi.application"
+
+CARELINE_REDIS_URL = os.environ.get("CARELINE_REDIS_URL")
+if CARELINE_REDIS_URL:
+    CHANNEL_LAYERS = {
+        "default": {
+            "BACKEND": "channels_redis.core.RedisChannelLayer",
+            "CONFIG": {"hosts": [CARELINE_REDIS_URL]},
+        },
+    }
+    CACHES = {
+        "default": {
+            "BACKEND": "django.core.cache.backends.redis.RedisCache",
+            "LOCATION": CARELINE_REDIS_URL,
+        },
+    }
+else:
+    CHANNEL_LAYERS = {
+        "default": {"BACKEND": "channels.layers.InMemoryChannelLayer"},
+    }
 
 
 WSGI_APPLICATION = 'healthcare_backend.wsgi.application'

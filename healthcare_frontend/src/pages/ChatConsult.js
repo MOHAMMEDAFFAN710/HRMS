@@ -1,201 +1,129 @@
-import React, { useState, useEffect, useRef } from 'react';
-import io from 'socket.io-client';
+import React, { useContext, useEffect, useRef, useState } from "react";
+import { useSearchParams } from "react-router-dom";
+import API from "../services/api";
+import CarelinePageHeader from "../components/CarelinePageHeader";
+import { AuthContext } from "../contexts/AuthContext";
+import "../styles/video.css";
 
-const SOCKET_URL = process.env.REACT_APP_SOCKET_URL || 'http://localhost:8000';
-const socket = io(SOCKET_URL, {
-  transports: ['websocket'],
-  autoConnect: true,
-});
+const WS_URL = process.env.REACT_APP_WS_URL || `${window.location.protocol === "https:" ? "wss" : "ws"}://${window.location.hostname}:8000`;
 
 function ChatConsult() {
-  const [message, setMessage] = useState('');
-  const [messages, setMessages] = useState([]);
-  const [isConnected, setIsConnected] = useState(false);
-  const chatEndRef = useRef(null);
+    const { user } = useContext(AuthContext);
+    const [searchParams] = useSearchParams();
+    const [consultation, setConsultation] = useState(null);
+    const [messages, setMessages] = useState([]);
+    const [message, setMessage] = useState("");
+    const [connected, setConnected] = useState(false);
+    const [error, setError] = useState("");
+    const socketRef = useRef(null);
+    const messageEndRef = useRef(null);
+    const pendingMessageRef = useRef("");
+    const heartbeatRef = useRef(null);
+    const mountedRef = useRef(true);
 
-  useEffect(() => {
-    const handleConnect = () => setIsConnected(true);
-    const handleDisconnect = () => setIsConnected(false);
-    const handleIncomingMessage = (payload) => {
-      const nextMessage = typeof payload === 'string'
-        ? { text: payload, sender: 'doctor', id: `${Date.now()}-${Math.random()}` }
-        : { ...payload, id: payload.id || `${Date.now()}-${Math.random()}` };
+    useEffect(() => {
+        let socket;
+        let cancelled = false;
+        mountedRef.current = true;
+        const initialize = async () => {
+            try {
+                const id = searchParams.get("consultation");
+                if (!id) throw new Error("Open chat from an authorized consultation.");
+                const [consultationResponse, messagesResponse] = await Promise.all([
+                    API.getConsultations(),
+                    API.getMessages(id),
+                ]);
+                const selected = consultationResponse.data.find((item) => String(item.id) === id);
+                if (!selected || selected.ended_at) throw new Error("This consultation is unavailable or has ended.");
+                if (cancelled) return;
+                setConsultation(selected);
+                setMessages(messagesResponse.data.map((item) => ({
+                    text: item.text,
+                    own: item.sender?.id === user?.id,
+                    sender: item.sender?.first_name || item.sender?.role || "participant",
+                    timestamp: item.created_at,
+                })));
+                const { data } = await API.getConsultationSocketTicket(selected.id);
+                if (cancelled) return;
+                const socketUrl = WS_URL.replace(/^http/, "ws");
+                socket = new WebSocket(`${socketUrl}/ws/consultations/${selected.room_id}/`);
+                socketRef.current = socket;
+                const timeout = window.setTimeout(() => {
+                    if (socket.readyState !== WebSocket.OPEN) setError("The consultation chat could not connect in time.");
+                }, 10000);
+                socket.onopen = () => socket.send(JSON.stringify({ type: "authenticate", ticket: data.ticket }));
+                socket.onmessage = (event) => {
+                    let payload;
+                    try { payload = JSON.parse(event.data); } catch (parseError) { setError("Received an invalid chat response."); return; }
+                    if (payload.type === "authenticated") {
+                        window.clearTimeout(timeout);
+                        setConnected(true);
+                        heartbeatRef.current = window.setInterval(() => {
+                            if (socket.readyState === WebSocket.OPEN) socket.send(JSON.stringify({ type: "heartbeat" }));
+                        }, 25000);
+                    } else if (payload.type === "chat_sent") {
+                        const ownText = pendingMessageRef.current;
+                        if (ownText) {
+                            setMessages((current) => [...current, { text: ownText, own: true, sender: "you", timestamp: payload.timestamp }]);
+                            pendingMessageRef.current = "";
+                            setMessage("");
+                        }
+                    } else if (payload.type === "chat") {
+                        if (payload.participant_id !== user?.id) {
+                            setMessages((current) => [...current, { text: payload.text, sender: payload.role || "participant", timestamp: payload.timestamp || new Date().toISOString() }]);
+                        }
+                    } else if (payload.type === "error") {
+                        pendingMessageRef.current = "";
+                        setError(payload.message || "The chat server rejected the message.");
+                    }
+                };
+                socket.onerror = () => setError("Chat connection failed. Refresh this page to reconnect.");
+                socket.onclose = (event) => {
+                    window.clearTimeout(timeout);
+                    if (heartbeatRef.current) window.clearInterval(heartbeatRef.current);
+                    setConnected(false);
+                    if (event.code === 4401 || event.code === 4403) setError("You are not authorized to access this consultation chat.");
+                };
+            } catch (requestError) {
+                if (!cancelled && mountedRef.current) setError(requestError.response?.data?.error || requestError.message || "Chat is temporarily unavailable.");
+            }
+        };
+        initialize();
+        return () => {
+            cancelled = true;
+            mountedRef.current = false;
+            if (heartbeatRef.current) window.clearInterval(heartbeatRef.current);
+            socket?.close(1000, "chat page left");
+            socketRef.current = null;
+        };
+    }, [searchParams, user]);
 
-      setMessages((prev) => [...prev, nextMessage]);
+    useEffect(() => messageEndRef.current?.scrollIntoView({ behavior: "smooth" }), [messages]);
+
+    const sendMessage = async (event) => {
+        event.preventDefault();
+        const text = message.trim();
+        if (!text || !connected || !consultation || pendingMessageRef.current) return;
+        try {
+            pendingMessageRef.current = text;
+            socketRef.current?.send(JSON.stringify({ type: "chat", text }));
+        } catch (sendError) {
+            pendingMessageRef.current = "";
+            setError(sendError.response?.data?.error || "Message could not be sent. Your draft has been kept.");
+        }
     };
 
-    socket.on('connect', handleConnect);
-    socket.on('disconnect', handleDisconnect);
-    socket.on('message', handleIncomingMessage);
-
-    return () => {
-      socket.off('connect', handleConnect);
-      socket.off('disconnect', handleDisconnect);
-      socket.off('message', handleIncomingMessage);
-    };
-  }, []);
-
-  useEffect(() => {
-    if (chatEndRef.current) {
-      chatEndRef.current.scrollIntoView({ behavior: 'smooth' });
-    }
-  }, [messages]);
-
-  const sendMessage = () => {
-    const trimmedMessage = message.trim();
-
-    if (!trimmedMessage) {
-      return;
-    }
-
-    const outgoingMessage = {
-      text: trimmedMessage,
-      sender: 'patient',
-      id: `${Date.now()}-${Math.random()}`,
-    };
-
-    socket.emit('message', trimmedMessage);
-    setMessages((prev) => [...prev, outgoingMessage]);
-    setMessage('');
-  };
-
-  const handleKeyDown = (event) => {
-    if (event.key === 'Enter') {
-      sendMessage();
-    }
-  };
-
-  return (
-    <div
-      style={{
-        minHeight: '100vh',
-        background: 'linear-gradient(135deg, #f0f9ff 0%, #e6f4ff 100%)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '24px',
-        fontFamily: 'Arial, sans-serif',
-      }}
-    >
-      <div
-        style={{
-          width: '100%',
-          maxWidth: '560px',
-          background: '#ffffff',
-          borderRadius: '18px',
-          boxShadow: '0 10px 30px rgba(0, 0, 0, 0.08)',
-          padding: '24px',
-          border: '1px solid #dfeefb',
-        }}
-      >
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            marginBottom: '16px',
-          }}
-        >
-          <h2 style={{ margin: 0, color: '#e5a868' }}>Chat with Doctor</h2>
-          <span
-            style={{
-              background: isConnected ? '#d9fbe5' : '#fef3c7',
-              color: isConnected ? '#166534' : '#92400e',
-              borderRadius: '999px',
-              padding: '6px 10px',
-              fontSize: '12px',
-              fontWeight: '600',
-            }}
-          >
-            {isConnected ? 'Online' : 'Connecting...'}
-          </span>
-        </div>
-
-        <div
-          style={{
-            height: '320px',
-            overflowY: 'auto',
-            border: '1px solid #dfeaf5',
-            borderRadius: '12px',
-            padding: '14px',
-            background: '#f8fbff',
-            marginBottom: '14px',
-          }}
-        >
-          {messages.length === 0 ? (
-            <p style={{ margin: 0, color: '#6b7280', textAlign: 'center', paddingTop: '110px' }}>
-              No messages yet. Start the conversation.
-            </p>
-          ) : (
-            messages.map((msg) => {
-              const text = typeof msg === 'string' ? msg : msg.text || '';
-              const isPatient = typeof msg !== 'string' ? msg.sender === 'patient' : false;
-
-              return (
-                <div
-                  key={msg.id || `${text}-${Math.random()}`}
-                  style={{
-                    display: 'flex',
-                    justifyContent: isPatient ? 'flex-end' : 'flex-start',
-                    marginBottom: '10px',
-                  }}
-                >
-                  <div
-                    style={{
-                      maxWidth: '75%',
-                      padding: '10px 12px',
-                      borderRadius: '12px',
-                      background: isPatient ? '#e5a868' : '#eaf3ff',
-                      color: isPatient ? '#fff' : '#1f2937',
-                      boxShadow: '0 1px 3px rgba(0, 0, 0, 0.06)',
-                    }}
-                  >
-                    {text}
-                  </div>
-                </div>
-              );
-            })
-          )}
-          <div ref={chatEndRef} />
-        </div>
-
-        <div style={{ display: 'flex', gap: '10px' }}>
-          <input
-            type="text"
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-            onKeyDown={handleKeyDown}
-            placeholder="Type a message..."
-            disabled={!isConnected}
-            style={{
-              flex: 1,
-              padding: '12px 14px',
-              border: '1px solid #d0d9e8',
-              borderRadius: '10px',
-              outline: 'none',
-              fontSize: '14px',
-              background: isConnected ? '#fff' : '#f3f4f6',
-            }}
-          />
-          <button
-            onClick={sendMessage}
-            disabled={!isConnected || !message.trim()}
-            style={{
-              background: !isConnected || !message.trim() ? '#d1d5db' : '#e5a868',
-              color: '#fff',
-              padding: '12px 18px',
-              borderRadius: '10px',
-              border: 'none',
-              cursor: !isConnected || !message.trim() ? 'not-allowed' : 'pointer',
-              fontWeight: '600',
-            }}
-          >
-            Send
-          </button>
-        </div>
-      </div>
-    </div>
-  );
+    return (
+        <main className="video-consult-page chat-consult-page">
+            <CarelinePageHeader />
+            <div className="video-consult-content">
+                <header className="video-consult-header"><div><p className="eyebrow">Consultation chat</p><h1>Talk with your care team</h1><p className={connected ? "connected" : "disconnected"}>{connected ? "Securely connected" : error || "Connecting to consultation"}</p></div></header>
+                {error && <p className="consult-error" role="alert">{error}</p>}
+                <section className="chat-log" aria-live="polite">{messages.map((item, index) => <p className={item.own ? "own" : ""} key={`${item.timestamp}-${index}`}><strong>{item.sender}</strong> {item.text}<time>{item.timestamp ? new Date(item.timestamp).toLocaleString([], { dateStyle: "short", timeStyle: "short" }) : ""}</time></p>)}<div ref={messageEndRef} /></section>
+                <form className="chat-entry" onSubmit={sendMessage}><input value={message} onChange={(event) => setMessage(event.target.value)} placeholder="Write a message" disabled={!connected || Boolean(consultation?.ended_at)} /><button type="submit" disabled={!connected || !message.trim() || Boolean(consultation?.ended_at)}>Send</button></form>
+            </div>
+        </main>
+    );
 }
 
 export default ChatConsult;

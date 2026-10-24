@@ -5,14 +5,14 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import * as THREE from 'three';
 
 import './ExperienceLanding.css';
+import { useContext } from 'react';
+import { AuthContext } from '../contexts/AuthContext';
+import { useLanguage } from '../contexts/LanguageContext';
+import AccountActions from './AccountActions';
 
 gsap.registerPlugin(ScrollTrigger);
 
-const services = [
-  { number: '01', title: 'A clearer way to care', text: 'One calm place for appointments, conversations and the care that follows.', tone: 'mint' },
-  { number: '02', title: 'Care that meets you', text: 'Move from a first question to a trusted clinician without losing your context.', tone: 'blue' },
-  { number: '03', title: 'Always within reach', text: 'Your care team, your timeline, your next best step, thoughtfully connected.', tone: 'coral' },
-];
+const serviceTones = ['mint', 'blue', 'coral'];
 
 function WebGLBackground() {
   const mountRef = useRef(null);
@@ -144,6 +144,8 @@ function CustomCursor() {
 function ExperienceLanding() {
   const [menuOpen, setMenuOpen] = useState(false);
   const pageRef = useRef(null);
+  const { user } = useContext(AuthContext);
+  const { language, changeLanguage, t } = useLanguage();
 
   useEffect(() => {
     const context = gsap.context(() => {
@@ -171,11 +173,16 @@ function ExperienceLanding() {
         <Link to="/" className="brand-mark" aria-label="Careline home"><span className="brand-symbol">◌</span>careline</Link>
         <button className="menu-toggle" onClick={() => setMenuOpen(!menuOpen)} aria-label="Toggle navigation" aria-expanded={menuOpen}><span /> <span /></button>
         <nav className="experience-links">
-          <a href="#approach" onClick={() => setMenuOpen(false)}>Approach</a>
-          <a href="#services" onClick={() => setMenuOpen(false)}>Services</a>
-          <a href="#contact" onClick={() => setMenuOpen(false)}>Contact</a>
+          <a href="#approach" onClick={() => setMenuOpen(false)}>{t.approach}</a>
+          <a href="#services" onClick={() => setMenuOpen(false)}>{t.designed}</a>
+          <a href="#contact" onClick={() => setMenuOpen(false)}>{t.contact || 'Contact'}</a>
+          {user && <Link to="/appointments" onClick={() => setMenuOpen(false)}>Appointments</Link>}
+          {user && <Link to="/profile" onClick={() => setMenuOpen(false)}>Profile</Link>}
+          {user?.role === 'doctor' && <Link to="/dataset" onClick={() => setMenuOpen(false)}>Dataset</Link>}
         </nav>
-        <Link to="/login" className="nav-cta">Sign in <span>↗</span></Link>
+        <label className="language-switcher"><span className="sr-only">{t.language}</span><select value={language} onChange={(event) => changeLanguage(event.target.value)} aria-label={t.language}><option value="en">EN</option><option value="hi">हि</option></select></label>
+        <Link to={user ? "/telemedicine" : "/login"} className="nav-cta">{user ? t.openCare : t.signIn} <span>↗</span></Link>
+        {user && <AccountActions />}
       </header>
 
       <section className="hero" id="top">
@@ -183,26 +190,26 @@ function ExperienceLanding() {
         <div className="hero-orbit orbit-one" />
         <div className="hero-orbit orbit-two" />
         <div className="hero-copy">
-          <p className="eyebrow"><span className="status-dot" /> Human care, intelligently connected</p>
-          <h1>Care that<br /><em>feels closer.</em></h1>
-          <p className="hero-description">A more considered way to move through healthcare. Thoughtful access, trusted people and space to feel looked after.</p>
-          <MagneticButton to="/register">Begin your care journey</MagneticButton>
+          <p className="eyebrow"><span className="status-dot" /> {t.heroEyebrow}</p>
+          <h1>{t.heroTitleOne}<br /><em>{t.heroTitleTwo}</em></h1>
+          <p className="hero-description">{t.heroDescription}</p>
+          <MagneticButton to={user ? "/telemedicine" : "/register"}>{user ? t.openCare : t.begin}</MagneticButton>
         </div>
-        <div className="hero-meta"><span>01 / 04</span><span>Scroll to explore</span><span className="scroll-line" /></div>
+        <div className="hero-meta"><span>01 / 04</span><span>{t.scrollExplore}</span><span className="scroll-line" /></div>
       </section>
 
       <section className="statement-section" id="approach">
-        <div className="section-kicker">The careline approach <span>02</span></div>
-        <div className="statement-copy"><p className="reveal-line">Healthcare can be<br /><strong>more human.</strong></p><p className="statement-note">We create room for the part of care that technology often forgets: clarity, continuity and the feeling that someone is truly with you.</p></div>
+        <div className="section-kicker">{t.approach} <span>02</span></div>
+        <div className="statement-copy"><p className="reveal-line">{t.approachTitle}<br /><strong>{t.approachTitleAccent}</strong></p><p className="statement-note">{t.approachNote}</p></div>
       </section>
 
       <section className="services-section" id="services">
-        <div className="section-heading"><div className="section-kicker">Designed around you <span>03</span></div><h2 className="reveal-line">A calmer path<br />forward.</h2></div>
-        <div className="service-grid">{services.map((service) => <article className={`service-card ${service.tone}`} key={service.number}><div className="card-top"><span>{service.number}</span><span className="card-arrow">↗</span></div><div><h3>{service.title}</h3><p>{service.text}</p></div><div className="card-glow" /></article>)}</div>
+        <div className="section-heading"><div className="section-kicker">{t.designed} <span>03</span></div><h2 className="reveal-line">{t.calmerPath}<br />{t.forward}</h2></div>
+        <div className="service-grid">{t.services.map((service, index) => <article className={`service-card ${serviceTones[index]}`} key={service[0]}><img className="service-image" src={`/images/doctor${index + 1}.jpg`} alt={["Doctor in clinical scrubs", "Surgeons working together in an operating room", "Doctor wearing scrubs and a stethoscope"][index]} /><div className="card-top"><span>0{index + 1}</span><span className="card-arrow">↗</span></div><div className="service-card-copy"><h3>{service[0]}</h3><p>{service[1]}</p></div><div className="card-glow" /></article>)}</div>
       </section>
 
-      <section className="closing-section" id="contact"><div className="closing-orb" /><div className="section-kicker">A better feeling is possible <span>04</span></div><h2 className="reveal-line">Start with<br /><em>one small step.</em></h2><MagneticButton to="/register" className="light-button">Meet your careline</MagneticButton></section>
-      <footer className="experience-footer"><span>careline / 2026</span><span>Care, with intention.</span><a href="#top">Back to top ↑</a></footer>
+      <section className="closing-section" id="contact"><div className="closing-orb" /><div className="section-kicker">{t.closingKicker} <span>04</span></div><h2 className="reveal-line">{t.closingTitle}<br /><em>{t.closingAccent}</em></h2><MagneticButton to={user ? "/telemedicine" : "/register"} className="light-button">{user ? t.openCare : t.closingButton}</MagneticButton></section>
+      <footer className="experience-footer"><span>careline / 2026</span><span>Care, with intention.</span><a href="#top">{t.backTop} ↑</a></footer>
     </main>
   );
 }

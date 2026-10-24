@@ -1,0 +1,38 @@
+.app-container { position: relative; min-height: 100vh; isolation: isolate; background: transparent !important; }
+.global-photo-backdrop { position: fixed; z-index: 0; inset: 0; overflow: hidden; background: #102326; pointer-events: none; }
+.global-photo-backdrop img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center; transition: opacity .35s ease; }
+.main-content { position: relative; z-index: 1; min-height: 100vh; background: transparent !important; }
+.main-content .experience-page { background: transparent !important; }
+.main-content .experience-page .hero,
+.main-content .experience-page .statement-section,
+.main-content .experience-page .services-section,
+.main-content .experience-page .closing-section,
+.main-content .experience-page .experience-footer { background: transparent !important; }
+.main-content .experience-page .webgl-background { opacity: 0 !important; }
+.main-content .experience-page .closing-orb { display: none !important; }
+.main-content .experience-page { color: #f2f5ee; }
+.main-content .experience-page .experience-nav,
+.main-content .experience-page .experience-nav a,
+.main-content .experience-page .experience-nav .language-switcher select { color: #f2f5ee; }
+.main-content .experience-page .experience-nav { mix-blend-mode: normal; }
+.main-content .experience-page .experience-nav .language-switcher select,
+.main-content .experience-page .nav-cta { border-color: rgba(242,245,238,.72); }
+.main-content .experience-page .experience-nav .menu-toggle span { background: #f2f5ee; }
+.main-content .experience-page .hero-description,
+.main-content .experience-page .statement-note,
+.main-content .experience-page .section-kicker,
+.main-content .experience-page .hero-meta { color: rgba(242,245,238,.88); }
+.main-content .experience-page .statement-copy strong { color: #b9eee1; }
+.main-content .experience-page .closing-section .section-kicker { border-color: rgba(242,245,238,.55); }
+.main-content .experience-page .experience-footer { color: rgba(242,245,238,.84); }
+.main-content .experience-page .experience-footer a { color: #f2f5ee; }
+.main-content .auth-experience { background: transparent !important; }
+.main-content .auth-atmosphere { background: radial-gradient(circle at 73% 28%, rgba(105,193,179,.2), transparent 22%), radial-gradient(circle at 16% 83%, rgba(255,159,129,.1), transparent 24%), linear-gradient(135deg, rgba(23,63,64,.44), rgba(13,41,45,.48) 65%, rgba(16,37,43,.5)) !important; }
+.main-content .telemedicine-container { background: transparent !important; }
+.main-content .telemedicine-nav { background: #f6f3ed; }
+.main-content .care-hero { background: rgba(27,51,59,.94) !important; }
+.main-content .care-section { background: #f6f3ed; }
+.main-content .slots-section { background: #ebe8df !important; }
+.main-content .profile-page,
+.main-content .appoint-main { background: rgba(242,245,238,.38) !important; }
+.main-content .dataset-page { background: rgba(243,246,242,.4) !important; }

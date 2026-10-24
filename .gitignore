@@ -15,7 +15,9 @@ healthcare_frontend/yarn-error.log*
 
 # Backend (Django) ignores
 healthcare_backend/__pycache__/
-healthcare_backend/*/migrations/
+healthcare_backend/*/migrations/__pycache__/
+!healthcare_backend/*/migrations/
+!healthcare_backend/*/migrations/*.py
 healthcare_backend/*/__pycache__/
 healthcare_backend/*.sqlite3
 healthcare_backend/.env

@@ -7,7 +7,8 @@ import AppointmentList from "../components/AppointmentList";
 import Telemedicine from "../pages/Telemedicine";
 import VideoConsult from "../pages/VideoConsult";
 import ChatConsult from "../pages/ChatConsult";
-// import SplashScreen from "./pages/SplashScreen";
+// import SplashScreen from "./pages/SplashScreen";MOHAMMEDaffan7
+
 
 import "../App.css"; // Ensure CSS is linked for styling
 

@@ -1,0 +1,22 @@
+.profile-page, .appoint-main { min-height: 100vh; padding: 68px 10vw 90px; color: #102326; background: #f2f5ee; font-family: 'Manrope', sans-serif; box-sizing: border-box; }
+.profile-page h1, .appoint-main h1 { max-width: 900px; margin: 24px 0 55px; color: #102326; font: 500 clamp(58px, 9vw, 132px)/.9 'Manrope', sans-serif; letter-spacing: -.08em; }
+.profile-page h2 { margin: 75px 0 24px; color: #102326; font: 500 clamp(30px, 4vw, 56px)/1 Georgia, serif; letter-spacing: -.04em; }
+.profile-page > p:not(.eyebrow) { min-height: 24px; color: #bb604f; font-size: .8rem; }
+.profile-form { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 30px 44px; max-width: 900px; }
+.profile-form label { display: grid; gap: 10px; color: #667b80; font-size: .72rem; letter-spacing: .08em; text-transform: uppercase; }
+.profile-form textarea { min-height: 110px; resize: vertical; }
+.profile-form button, .profile-page button { justify-self: start; border: 0; padding: 14px 20px; color: #f2f5ee; background: #102326; font: 600 .75rem 'Manrope', sans-serif; cursor: pointer; }
+.profile-page section { max-width: 900px; }
+.profile-page section form { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.profile-page section form input, .profile-page section form select { border: 0; border-bottom: 1px solid rgba(16,35,38,.2); padding: 13px 5px; color: #102326; background: transparent; font: inherit; }
+.profile-page section > p { border-top: 1px solid rgba(16,35,38,.15); padding: 16px 0; color: #667b80; font-size: .82rem; }
+.profile-page section > p button { margin-left: 15px; padding: 5px 9px; color: #bb604f; background: transparent; }
+.appointment-top { display: flex; align-items: flex-end; justify-content: space-between; gap: 30px; border-bottom: 1px solid rgba(16,35,38,.16); padding-bottom: 34px; }
+.appointment-top p:not(.eyebrow) { color: #667b80; font-size: .9rem; }
+.appointment-top .button { display: inline-block; padding: 14px 18px; color: #f2f5ee; background: #102326; font-size: .75rem; text-decoration: none; }
+.appointment-list { max-width: 1000px; }
+.appointment-row { display: flex; align-items: center; justify-content: space-between; gap: 30px; border-bottom: 1px solid rgba(16,35,38,.15); padding: 24px 0; }
+.appointment-row > div:first-child { display: grid; gap: 7px; }.appointment-row strong { font: 500 1.2rem Georgia, serif; }.appointment-row span, .appointment-row small { color: #667b80; font-size: .78rem; }.appointment-row > div:last-child { display: flex; align-items: center; gap: 14px; }.appointment-row button, .appointment-row a { border: 0; color: #bb604f; background: transparent; font: 600 .75rem 'Manrope', sans-serif; text-decoration: none; cursor: pointer; }.status { font-size: .65rem; letter-spacing: .1em; text-transform: uppercase; }.status-booked { color: #bb604f; }.status-confirmed { color: #398675; }.status-cancelled { color: #8b7370; }
+.appointment-row .appointment-call-link { display: inline-flex; align-items: center; gap: 8px; padding: 10px 13px; color: #f2f5ee; background: #173638; font-size: .72rem; }
+.appointment-row .appointment-call-link:hover { color: #102326; background: #b9eee1; }
+@media (max-width: 700px) { .profile-page, .appoint-main { padding: 52px 7vw 60px; }.profile-page h1, .appoint-main h1 { font-size: 4rem; }.profile-form { grid-template-columns: 1fr; }.appointment-top, .appointment-row { align-items: flex-start; flex-direction: column; }.appointment-row > div:last-child { flex-wrap: wrap; } }

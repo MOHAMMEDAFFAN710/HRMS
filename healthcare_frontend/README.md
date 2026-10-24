@@ -68,3 +68,19 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/d
 ### `npm run build` fails to minify
 
 This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+
+## WebRTC Consultations
+
+The consultation page uses the authenticated Django Channels WebSocket endpoint. Deploy the backend with the ASGI application (`healthcare_backend.asgi:application`); the backend Procfile uses Daphne. A WSGI-only Gunicorn process cannot serve consultation sockets.
+
+Set `REACT_APP_API_URL` to the deployed API base URL and `REACT_APP_WS_URL` to the matching secure WebSocket origin, for example `wss://api.example.com`. The default signaling URL is derived from the browser host and uses `wss` on HTTPS. Production must use HTTPS/WSS and include the frontend origin/host in Django's `ALLOWED_HOSTS` and allowed-origin configuration.
+
+The app uses Google's public STUN server by default. STUN alone cannot connect every NAT/firewall combination. For reliable production calls, provide a Coturn-compatible TURN service and set these backend environment variables:
+
+- `WEBRTC_TURN_URLS`: comma-separated `turn:` or `turns:` URLs.
+- `WEBRTC_TURN_SHARED_SECRET`: Coturn REST shared secret. Keep this only on the backend; the API issues short-lived per-user credentials.
+- `WEBRTC_TURN_CREDENTIAL_TTL`: credential lifetime in seconds; defaults to `3600`.
+- `WEBRTC_STUN_URL`: optional STUN URL; defaults to `stun:stun.l.google.com:19302`.
+- `CARELINE_REDIS_URL`: recommended shared Redis URL for Channels groups and participant-presence leases when running multiple backend workers. Without it, the development in-memory channel layer only works within one process.
+
+Automated tests cover REST authorization and two-participant ASGI signaling. Actual camera/microphone quality and cross-network TURN behavior still require two logged-in devices/browsers with media permissions and an externally reachable TURN service; these were not simulated by the automated tests.

@@ -1,0 +1,25 @@
+.auth-registration .auth-field-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+.auth-registration .auth-field select,
+.auth-registration .auth-field textarea,
+.auth-registration .auth-field input[type="date"],
+.auth-registration .auth-field input[type="number"],
+.auth-registration .auth-field input[type="tel"] {
+    width: 100%;
+    min-width: 0;
+    padding: 12px 10px;
+    border: 1px solid rgba(234, 246, 240, .22);
+    border-radius: 3px;
+    background: rgba(13, 41, 45, .4);
+    color: #eaf6f0;
+    font: 13px 'Manrope', sans-serif;
+}
+.auth-registration .auth-field select option { color: #173f40; background: #eaf6f0; }
+.auth-registration .auth-field textarea { resize: vertical; line-height: 1.5; }
+.auth-registration .auth-field input:focus,
+.auth-registration .auth-field select:focus,
+.auth-registration .auth-field textarea:focus { border-color: #8bd6be; outline: 2px solid rgba(139, 214, 190, .2); }
+.auth-registration .auth-form { gap: 17px; }
+.auth-registration .auth-submit:disabled { cursor: wait; opacity: .72; }
+@media (max-width: 440px) {
+    .auth-registration .auth-field-row { gap: 12px; }
+}
