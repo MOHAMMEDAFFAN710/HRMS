@@ -1,0 +1,35 @@
+.health-awareness-page { min-height: 100vh; color: #183332; background: #f5f6f0; font-family: inherit; }
+.ha-main { width: min(1120px, calc(100% - 40px)); margin: 0 auto; padding: 44px 0 64px; }
+.ha-hero { max-width: 760px; padding: 28px 0 36px; }
+.ha-eyebrow { margin: 0 0 14px; color: #347d73; font-size: 11px; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; }
+.ha-hero h1 { max-width: 720px; margin: 0; font-size: clamp(38px, 6vw, 68px); line-height: 1.02; letter-spacing: -.045em; font-weight: 650; }
+.ha-intro { max-width: 610px; margin: 20px 0 28px; color: #61716c; font-size: 16px; line-height: 1.7; }
+.ha-language { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; }
+.ha-language label { font-size: 13px; font-weight: 700; }
+.ha-language select { min-width: 150px; padding: 10px 12px; border: 1px solid #cbd5cb; border-radius: 8px; background: #fff; color: #183332; font: inherit; }
+.ha-content { padding: 24px 0 40px; border-top: 1px solid #dce2d8; }
+.ha-tools { display: grid; gap: 18px; margin-bottom: 24px; }
+.ha-search { display: flex; align-items: center; gap: 10px; width: min(440px, 100%); padding: 0 14px; border: 1px solid #d8ded4; border-radius: 8px; background: #fff; }
+.ha-search > span:not(.ha-sr-only) { font-size: 25px; color: #64847b; }
+.ha-search input { width: 100%; min-height: 44px; border: 0; outline: 0; background: transparent; color: inherit; font: inherit; }
+.ha-sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+.ha-filters { display: flex; flex-wrap: wrap; gap: 8px; }
+.ha-filters button { padding: 8px 13px; border: 1px solid #d3ddd2; border-radius: 999px; background: transparent; color: #536a63; cursor: pointer; font: inherit; font-size: 12px; }
+.ha-filters button.active { border-color: #244e48; background: #244e48; color: #fff; }
+.ha-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+.ha-card { display: flex; flex-direction: column; align-items: flex-start; min-height: 280px; padding: 22px; border: 1px solid #e0e5dc; border-radius: 12px; background: #fff; }
+.ha-card-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; width: 100%; margin-bottom: 18px; }
+.ha-card-icon { display: grid; width: 36px; height: 36px; place-items: center; border-radius: 10px; background: #edf4ec; color: #347d73; font-size: 21px; }
+.ha-tag { color: #608078; font-size: 10px; font-weight: 700; }
+.ha-card h2 { margin: 0 0 10px; font-size: 19px; line-height: 1.25; }
+.ha-card p { margin: 0 0 18px; color: #65746e; font-size: 13px; line-height: 1.65; }
+.ha-read { margin-top: auto; padding: 0; border: 0; background: transparent; color: #2e766c; cursor: pointer; font: inherit; font-size: 12px; font-weight: 800; }
+.ha-takeaway { width: 100%; margin-top: 14px; padding-top: 12px; border-top: 1px solid #e1e8df; color: #344f48; font-size: 12px; line-height: 1.6; }
+.ha-empty { color: #65746e; }
+.ha-consult { display: flex; align-items: center; justify-content: space-between; gap: 24px; margin: 16px 0 22px; padding: clamp(22px, 4vw, 38px); border-radius: 14px; background: #e7eee4; }
+.ha-consult h2 { margin: 0 0 8px; font-size: clamp(22px, 3vw, 30px); }
+.ha-consult p:not(.ha-eyebrow) { margin: 0; color: #60726b; font-size: 13px; line-height: 1.6; }
+.ha-book { flex: 0 0 auto; display: inline-flex; align-items: center; gap: 16px; padding: 13px 17px; border-radius: 7px; background: #244e48; color: #fff; text-decoration: none; font-size: 12px; font-weight: 700; }
+.ha-disclaimer { max-width: 850px; color: #78857e; font-size: 11px; line-height: 1.7; }
+@media (max-width: 850px) { .ha-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 560px) { .ha-main { width: min(100% - 28px, 1120px); padding-top: 24px; } .ha-grid { grid-template-columns: 1fr; } .ha-card { min-height: auto; } .ha-consult { align-items: flex-start; flex-direction: column; } .ha-book { width: 100%; justify-content: space-between; box-sizing: border-box; } }

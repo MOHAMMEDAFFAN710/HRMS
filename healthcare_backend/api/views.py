@@ -300,14 +300,42 @@ class AppointmentViewSet(viewsets.ModelViewSet):
         doctor = Doctor.objects.filter(pk=request.data.get("doctor_id"), is_accepting_patients=True).first()
         if not doctor:
             return Response({"error": "Doctor not found or not accepting patients"}, status=404)
-        available = doctor.availability.filter(weekday=start_at.weekday(), active=True, start_time__lte=start_at.time(), end_time__gte=end_at.time()).exists()
-        if not available:
-            return Response({"error": "The requested time is outside the doctor's availability"}, status=400)
+        local_start = timezone.localtime(start_at)
+        local_end = timezone.localtime(end_at)
+        availability_rows = doctor.availability.filter(
+            weekday=local_start.weekday(),
+            active=True,
+            start_time__lte=local_start.time(),
+            end_time__gte=local_end.time(),
+        )
+        slot_is_valid = any(
+            (end_at - start_at) == timedelta(minutes=row.slot_minutes)
+            and (
+                (local_start.replace(tzinfo=None) - datetime.combine(local_start.date(), row.start_time)).total_seconds()
+                % (row.slot_minutes * 60) == 0
+            )
+            for row in availability_rows
+        )
         try:
             with transaction.atomic():
-                conflict = Appointment.objects.select_for_update().filter(doctor=doctor, status__in=[Appointment.BOOKED, Appointment.CONFIRMED, Appointment.IN_PROGRESS], start_at__lt=end_at, end_at__gt=start_at).exists()
+                # Report an existing booking conflict before slot-duration errors.
+                # This ensures overlapping requests consistently return HTTP 409.
+                conflict = Appointment.objects.select_for_update().filter(
+                    doctor=doctor,
+                    status__in=[Appointment.BOOKED, Appointment.CONFIRMED, Appointment.IN_PROGRESS],
+                    start_at__lt=end_at,
+                    end_at__gt=start_at,
+                ).exists()
                 if conflict:
-                    return Response({"error": "That appointment slot overlaps an existing booking"}, status=409)
+                    return Response(
+                        {"error": "That appointment slot overlaps an existing booking"},
+                        status=409,
+                    )
+                if not slot_is_valid:
+                    return Response(
+                        {"error": "Choose one of the available appointment slots shown for this clinician."},
+                        status=400,
+                    )
                 appointment = Appointment.objects.create(patient=request.user.patient_profile, doctor=doctor, start_at=start_at, end_at=end_at, reason=request.data.get("reason", ""), status=Appointment.BOOKED)
         except IntegrityError:
             return Response({"error": "That appointment slot has already been booked"}, status=409)
@@ -318,12 +346,37 @@ class AppointmentViewSet(viewsets.ModelViewSet):
     def transition(self, request, pk=None):
         appointment = self.get_object()
         next_status = request.data.get("status")
-        allowed = {Appointment.BOOKED: (Appointment.CONFIRMED, Appointment.CANCELLED), Appointment.CONFIRMED: (Appointment.IN_PROGRESS, Appointment.CANCELLED), Appointment.IN_PROGRESS: (Appointment.COMPLETED,)}
-        if next_status not in allowed.get(appointment.status, ()):
-            return Response({"error": "Invalid appointment status transition"}, status=400)
+        user = request.user
+
+        # Patients may cancel only their own request/confirmed appointment.
+        # Only the assigned clinician may confirm a booking. Call lifecycle
+        # transitions are handled by the consultation endpoints, not this API.
+        if next_status == Appointment.CANCELLED:
+            if user != appointment.patient.user and user != appointment.doctor.user and not user.is_staff:
+                return Response({"error": "You are not allowed to cancel this appointment"}, status=403)
+            if appointment.status not in (Appointment.BOOKED, Appointment.CONFIRMED):
+                return Response({"error": "Only booked or confirmed appointments can be cancelled"}, status=409)
+        elif next_status == Appointment.CONFIRMED:
+            if user != appointment.doctor.user and not user.is_staff:
+                return Response({"error": "Only the assigned clinician can confirm this appointment"}, status=403)
+            if appointment.status != Appointment.BOOKED:
+                return Response({"error": "Only booked appointments can be confirmed"}, status=409)
+        else:
+            return Response({"error": "Unsupported appointment status transition"}, status=400)
+
         appointment.status = next_status
         appointment.save(update_fields=["status"])
-        notify(appointment.patient.user, "Appointment updated", f"Your appointment is now {next_status.replace('_', ' ').lower()}.")
+        notify(
+            appointment.patient.user,
+            "Appointment updated",
+            f"Your appointment is now {next_status.replace('_', ' ').lower()}.",
+        )
+        if next_status == Appointment.CONFIRMED:
+            notify(
+                appointment.doctor.user,
+                "Appointment confirmed",
+                f"The appointment for {appointment.start_at:%Y-%m-%d %H:%M} is confirmed.",
+            )
         return Response(self.get_serializer(appointment).data)
 
 

@@ -1,8 +1,6 @@
-import React, { useEffect, useRef, useState } from "react";
-import { Link, useSearchParams } from "react-router-dom";
-import { useContext } from "react";
+import React, { useEffect, useRef, useState, useContext } from "react";
+import { Link, useSearchParams, useParams } from "react-router-dom";
 import API from "../services/api";
-import CarelinePageHeader from "../components/CarelinePageHeader";
 import { AuthContext } from "../contexts/AuthContext";
 import "../styles/video.css";
 
@@ -14,7 +12,8 @@ function formatClock(totalSeconds) {
     return `${String(Math.floor(totalSeconds / 60)).padStart(2, "0")}:${String(totalSeconds % 60).padStart(2, "0")}`;
 }
 
-function VideoConsult() {
+function VideoConsult({ appointmentId: appointmentIdProp }) {
+    const { appointmentId: routeAppointmentId } = useParams();
     const { user } = useContext(AuthContext);
     const [searchParams] = useSearchParams();
     const [consultation, setConsultation] = useState(null);
@@ -583,8 +582,12 @@ function VideoConsult() {
     useEffect(() => {
         mountedRef.current = true;
         cleanupRef.current = false;
-        const appointmentId = searchParams.get("appointment");
-        const consultationId = searchParams.get("consultation");
+        const appointmentId =
+    appointmentIdProp ||
+    routeAppointmentId ||
+    searchParams.get("appointment");
+
+const consultationId = searchParams.get("consultation");
         let cancelled = false;
 
         const initialize = async () => {
@@ -644,7 +647,7 @@ function VideoConsult() {
             stopMedia();
             if (remoteVideoElement) remoteVideoElement.srcObject = null;
         };
-    }, [searchParams, user]);
+  }, [searchParams, user, appointmentIdProp, routeAppointmentId]);
 
     useEffect(() => {
         const updateFullscreen = () => setIsFullscreen(document.fullscreenElement === stageRef.current);
@@ -787,7 +790,6 @@ function VideoConsult() {
 
     return (
         <main className="video-consult-page">
-            <CarelinePageHeader />
             <div className="video-consult-content">
                 <header className="video-consult-header">
                     <div className="booth-heading"><p className="eyebrow">CARELINE / PRIVATE CONSULTATION</p><h1>Video consultation</h1><p className="booth-participant">{otherName}{appointment?.reason ? ` · ${appointment.reason}` : ""}</p></div>

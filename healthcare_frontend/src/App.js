@@ -9,6 +9,7 @@ import Register from './pages/Register';
 import ExperienceLanding from './components/ExperienceLanding';
 import Profile from './pages/Profile';
 import Dataset from './pages/Dataset';
+import HealthAwareness from './pages/HealthAwareness';
 import CarelinePageHeader from './components/CarelinePageHeader';
 import GlobalPhotoBackdrop from './components/GlobalPhotoBackdrop';
 import { AuthContext, AuthProvider } from './contexts/AuthContext';
@@ -33,6 +34,7 @@ const App = () => {
       <div className="main-content">
         <Routes>
         <Route path="/" element={<ExperienceLanding />} />
+        <Route path="/health-awareness" element={<HealthAwareness />} />
         <Route path="/appointments" element={
             <ProtectedRoute>
             <CarelinePageHeader />

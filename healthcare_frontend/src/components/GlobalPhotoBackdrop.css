@@ -33,6 +33,30 @@
 .main-content .care-hero { background: rgba(27,51,59,.94) !important; }
 .main-content .care-section { background: #f6f3ed; }
 .main-content .slots-section { background: #ebe8df !important; }
-.main-content .profile-page,
-.main-content .appoint-main { background: rgba(242,245,238,.38) !important; }
-.main-content .dataset-page { background: rgba(243,246,242,.4) !important; }
+.main-content .profile-page {
+    background: #f2f5ee !important;
+}
+
+.main-content .appoint-main {
+    background: #f2f5ee !important;
+    color: #17282b;
+    min-height: 100vh;
+    padding: 48px clamp(20px, 5vw, 80px);
+}
+
+.appoint-main .appointment-top h1,
+.appoint-main .appointment-row strong {
+    color: #17282b;
+}
+
+.appoint-main .appointment-top p,
+.appoint-main .appointment-row span,
+.appoint-main .appointment-row small {
+    color: #52676b;
+}
+
+.appoint-main .appointment-row {
+    background: #fff;
+    border-bottom: 1px solid #dce5df;
+    padding: 24px 0;
+}

@@ -12,6 +12,7 @@ const CarelinePageHeader = () => {
             <Link to="/" className="careline-page-brand"><span aria-hidden="true">◌</span> careline</Link>
             <nav aria-label="Main navigation">
                 <Link to="/telemedicine">Care</Link>
+                <Link to="/health-awareness">Health Awareness</Link>
                 <Link to="/appointments">Appointments</Link>
                 <Link to="/profile">Profile</Link>
                 {user?.role === "doctor" && <Link to="/dataset">Dataset</Link>}
